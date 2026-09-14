@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maarg"
+version = "0.1.0"
+description = "Zero-instrumentation experiment tracking for Python — a decorator that auto-captures inputs and outputs, no logging calls required."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Moazzam Matin", email = "matin.moazzam01@gmail.com"}
+]
+keywords = ["experiment-tracking", "mlops", "machine-learning", "decorator", "introspection"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-cov", "mypy", "ruff", "build", "twine"]
+
+[project.urls]
+Homepage = "https://github.com/Moazzam-Matin/maarg"
+Repository = "https://github.com/Moazzam-Matin/maarg"
+Issues = "https://github.com/Moazzam-Matin/maarg/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
