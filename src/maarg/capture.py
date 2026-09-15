@@ -11,6 +11,9 @@ from __future__ import annotations
 import sys
 from typing import Any
 
+import os
+from pathlib import Path
+
 # Defaults — overridable per-call via the @track decorator later.
 DEFAULT_MAX_SCALAR_BYTES = 1000
 DEFAULT_MAX_COLLECTION_LENGTH = 20
@@ -65,3 +68,67 @@ def filter_inputs(
         for name, value in args.items()
         if is_loggable(value, max_scalar_bytes, max_collection_length)
     }
+
+
+# ── Output splitting ─────────────────────────────────────────────────
+
+
+OTHER_REPR_MAX_LEN = 200
+
+
+def _is_matplotlib_figure(value: Any) -> bool:
+    """Check for a matplotlib Figure without hard-depending on matplotlib."""
+    try:
+        import matplotlib.figure
+        return isinstance(value, matplotlib.figure.Figure)
+    except ImportError:
+        return False
+
+
+def _save_figure(fig: Any, name: str, artifacts_dir: str | Path) -> str:
+    """Save a figure to `artifacts_dir/<name>.png` and return the path."""
+    artifacts_dir = Path(artifacts_dir)
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    path = artifacts_dir / f"{name}.png"
+    fig.savefig(path)
+    return str(path)
+
+
+def split_output(
+    output: Any,
+    artifacts_dir: str | Path,
+) -> tuple[dict[str, float], list[dict[str, str]], dict[str, Any]]:
+    """
+    Classify a function's return value into (metrics, artifacts, other).
+
+    - A dict return value is walked key by key, classifying each value.
+    - A non-dict return value is treated as a single item named "result".
+
+    Classification rules, in order:
+      - bool         -> other (never treated as a number)
+      - int / float  -> metrics
+      - a known artifact type (currently: matplotlib Figure) -> saved to
+        disk under `artifacts_dir`, recorded in artifacts
+      - str / None   -> other, stored as-is
+      - anything else (unrecognized object) -> other, as a truncated repr
+    """
+    metrics: dict[str, float] = {}
+    artifacts: list[dict[str, str]] = []
+    other: dict[str, Any] = {}
+
+    items = output.items() if isinstance(output, dict) else [("result", output)]
+
+    for name, value in items:
+        if isinstance(value, bool):
+            other[name] = value
+        elif isinstance(value, (int, float)):
+            metrics[name] = value
+        elif _is_matplotlib_figure(value):
+            path = _save_figure(value, name, artifacts_dir)
+            artifacts.append({"name": name, "path": path, "type": "chart"})
+        elif isinstance(value, (str, type(None))):
+            other[name] = value
+        else:
+            other[name] = repr(value)[:OTHER_REPR_MAX_LEN]
+
+    return metrics, artifacts, other

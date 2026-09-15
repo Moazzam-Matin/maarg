@@ -1,6 +1,14 @@
 """Tests for input-filtering logic (is_loggable / filter_inputs)."""
 
+import matplotlib
+import matplotlib.pyplot as plt
+
+from pathlib import Path
+
 from maarg.capture import is_loggable, filter_inputs
+matplotlib.use("Agg")  # non-interactive backend, no display needed for tests
+
+from maarg.capture import split_output
 
 
 # ── Scalars ──────────────────────────────────────────────────────────
@@ -97,3 +105,100 @@ def test_filter_inputs_respects_custom_thresholds():
 
 def test_filter_inputs_on_empty_dict_returns_empty_dict():
     assert filter_inputs({}) == {}
+
+
+# ── split_output ─────────────────────────────────────────────────────
+
+
+def test_numeric_values_go_to_metrics():
+    metrics, artifacts, other = split_output({"accuracy": 0.95, "loss": 0.08}, artifacts_dir="unused")
+    assert metrics == {"accuracy": 0.95, "loss": 0.08}
+    assert artifacts == []
+    assert other == {}
+
+
+def test_bool_goes_to_other_not_metrics():
+    metrics, artifacts, other = split_output({"converged": True}, artifacts_dir="unused")
+    assert metrics == {}
+    assert other == {"converged": True}
+
+
+def test_string_goes_to_other():
+    metrics, artifacts, other = split_output({"status": "converged"}, artifacts_dir="unused")
+    assert other == {"status": "converged"}
+    assert metrics == {}
+
+
+def test_none_goes_to_other():
+    metrics, artifacts, other = split_output({"checkpoint": None}, artifacts_dir="unused")
+    assert other == {"checkpoint": None}
+
+
+def test_mixed_dict_splits_correctly_by_key():
+    output = {
+        "accuracy": 0.95,
+        "converged": True,
+        "status": "early stopping",
+    }
+    metrics, artifacts, other = split_output(output, artifacts_dir="unused")
+
+    assert metrics == {"accuracy": 0.95}
+    assert other == {"converged": True, "status": "early stopping"}
+    assert artifacts == []
+
+
+def test_non_dict_scalar_wraps_in_result_key():
+    metrics, artifacts, other = split_output(0.87, artifacts_dir="unused")
+    assert metrics == {"result": 0.87}
+    assert other == {}
+
+
+def test_non_dict_string_wraps_in_result_key():
+    metrics, artifacts, other = split_output("converged", artifacts_dir="unused")
+    assert other == {"result": "converged"}
+    assert metrics == {}
+
+
+def test_unrecognized_object_falls_back_to_truncated_repr():
+    class CustomResult:
+        def __repr__(self):
+            return "x" * 500  # deliberately longer than OTHER_REPR_MAX_LEN
+
+    metrics, artifacts, other = split_output(CustomResult(), artifacts_dir="unused")
+    assert metrics == {}
+    assert artifacts == []
+    assert len(other["result"]) == 200  # truncated to OTHER_REPR_MAX_LEN
+
+
+def test_matplotlib_figure_is_saved_as_artifact(tmp_path):
+    fig, ax = plt.subplots()
+    ax.plot([1, 2, 3], [4, 5, 6])
+
+    metrics, artifacts, other = split_output({"chart": fig}, artifacts_dir=tmp_path)
+    plt.close(fig)
+
+    assert metrics == {}
+    assert other == {}
+    assert len(artifacts) == 1
+    assert artifacts[0]["name"] == "chart"
+    assert artifacts[0]["type"] == "chart"
+
+    saved_path = Path(artifacts[0]["path"])
+    assert saved_path.exists()
+    assert saved_path.suffix == ".png"
+
+
+def test_artifacts_dir_is_created_if_missing(tmp_path):
+    fig, ax = plt.subplots()
+    nested_dir = tmp_path / "does" / "not" / "exist" / "yet"
+
+    metrics, artifacts, other = split_output(fig, artifacts_dir=nested_dir)
+    plt.close(fig)
+
+    assert nested_dir.exists()
+    assert Path(artifacts[0]["path"]).exists()
+
+
+def test_empty_dict_output_returns_all_empty():
+    metrics, artifacts, other = split_output({}, artifacts_dir="unused")
+    assert metrics == {} and artifacts == [] and other == {}
