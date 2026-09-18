@@ -1,7 +1,6 @@
 """Tests for the @track decorator module."""
 
 import pytest
-from pathlib import Path
 from maarg.storage.sqlite import SQLiteStorage
 from maarg.tracking import track
 
@@ -24,7 +23,7 @@ def test_track_bare_decorator_records_run(storage):
     assert len(runs) == 1
     run = runs[0]
     assert run.function == "compute_loss"
-    assert run.experiment == "default"
+    assert run.experiment == "compute_loss"  # defaults to function name
     assert run.inputs == {"learning_rate": 0.02}
     assert run.metrics == {"loss": 0.05}
     assert run.duration_sec >= 0.0
@@ -80,3 +79,22 @@ def test_track_preserves_function_metadata():
 
     assert sample_function.__name__ == "sample_function"
     assert sample_function.__doc__ == "Sample docstring."
+
+
+def test_track_experiment_defaults_to_function_name_not_shared_across_functions(storage):
+    """Two different functions, both bare @track, should NOT collide under
+    a shared 'default' experiment label — each gets its own function name."""
+
+    @track(storage=storage)
+    def func_a():
+        return 1
+
+    @track(storage=storage)
+    def func_b():
+        return 2
+
+    func_a()
+    func_b()
+
+    assert storage.list_by_experiment("func_a")[0].function == "func_a"
+    assert storage.list_by_experiment("func_b")[0].function == "func_b"

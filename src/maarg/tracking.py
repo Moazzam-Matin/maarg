@@ -46,7 +46,7 @@ def track(_func: F) -> F: ...
 def track(
     _func: None = None,
     *,
-    experiment: str = "default",
+    experiment: str | None = None,
     storage: StorageBackend | None = None,
     artifacts_dir: str | Path = Path(".maarg") / "artifacts",
     max_scalar_bytes: int = DEFAULT_MAX_SCALAR_BYTES,
@@ -57,7 +57,7 @@ def track(
 def track(
     _func: F | None = None,
     *,
-    experiment: str = "default",
+    experiment: str | None = None,
     storage: StorageBackend | None = None,
     artifacts_dir: str | Path = Path(".maarg") / "artifacts",
     max_scalar_bytes: int = DEFAULT_MAX_SCALAR_BYTES,
@@ -74,11 +74,22 @@ def track(
         @track(experiment="resnet-50", max_scalar_bytes=2000)
         def evaluate(model, dataset):
             return {"loss": 0.12}
+
+    `experiment` defaults to the wrapped function's own name if not given.
     """
 
     def decorator(func: F) -> F:
+        # Resolved once, at decoration time — the function's name and
+        # signature never change between calls, so no need to redo this
+        # work on every invocation.
+        resolved_experiment = experiment if experiment is not None else func.__name__
+        sig = inspect.signature(func)
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
+            # Storage IS resolved at call time (not here), so runtime
+            # changes to the default backend take effect on already-
+            # decorated functions, and per-test overrides stay isolated.
             backend = storage if storage is not None else _get_default_storage()
 
             # 1. Generate run_id early so artifact subdirectories are predictable
@@ -86,7 +97,6 @@ def track(
             run_artifacts_dir = Path(artifacts_dir) / run_id
 
             # 2. Bind parameter values including defaults
-            sig = inspect.signature(func)
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
@@ -106,7 +116,7 @@ def track(
                 failed_run = Run(
                     run_id=run_id,
                     function=func.__name__,
-                    experiment=experiment,
+                    experiment=resolved_experiment,
                     inputs=filtered_inputs,
                     duration_sec=duration_sec,
                     other={
@@ -127,7 +137,7 @@ def track(
             successful_run = Run(
                 run_id=run_id,
                 function=func.__name__,
-                experiment=experiment,
+                experiment=resolved_experiment,
                 inputs=filtered_inputs,
                 metrics=metrics,
                 artifacts=artifacts,
