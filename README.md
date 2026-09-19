@@ -1,5 +1,8 @@
 # maarg
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
+
 **Experiment tracking with zero logging code.**
 
 Put `@track` on a function. Every call is recorded (arguments, results, timing, even failures) and you can query the history from Python. No `log_param()`, no `log_metric()`, no server, no account.
@@ -92,7 +95,7 @@ runs = SQLiteStorage().list_all()
 best_run(runs, "error", higher_is_better=False)
 # Run(function='fit', inputs={'learning_rate': 0.01, 'epochs': 100}, metrics={'error': 4.86e-11}, ...)
 
-top_n(runs, "accuracy", n=5)                         # rank by a metric
+top_n(runs, "error", n=5, higher_is_better=False)        # rank by a metric
 filter_runs(runs, experiment="fit", learning_rate=0.01)  # exact-match on inputs
 
 compare(top_n(runs, "error", n=3, higher_is_better=False))
@@ -173,4 +176,4 @@ maarg deliberately does not include a hosted tracking server or experiment orche
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
