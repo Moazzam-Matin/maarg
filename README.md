@@ -1,4 +1,10 @@
-# maarg
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/maarg_logo_dark.svg">
+    <img alt="maarg" src="docs/assets/maarg_logo.svg" width="280">
+  </picture>
+</p>
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
