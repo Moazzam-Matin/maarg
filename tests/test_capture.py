@@ -1,15 +1,15 @@
 """Tests for input-filtering logic (is_loggable / filter_inputs)."""
 
+from pathlib import Path
+
 import matplotlib
 import matplotlib.pyplot as plt
 
-from pathlib import Path
+from maarg.capture import filter_inputs, is_loggable
 
-from maarg.capture import is_loggable, filter_inputs
 matplotlib.use("Agg")  # non-interactive backend, no display needed for tests
 
 from maarg.capture import split_output
-
 
 # ── Scalars ──────────────────────────────────────────────────────────
 
@@ -118,19 +118,19 @@ def test_numeric_values_go_to_metrics():
 
 
 def test_bool_goes_to_other_not_metrics():
-    metrics, artifacts, other = split_output({"converged": True}, artifacts_dir="unused")
+    metrics, _artifacts, other = split_output({"converged": True}, artifacts_dir="unused")
     assert metrics == {}
     assert other == {"converged": True}
 
 
 def test_string_goes_to_other():
-    metrics, artifacts, other = split_output({"status": "converged"}, artifacts_dir="unused")
+    metrics, _artifacts, other = split_output({"status": "converged"}, artifacts_dir="unused")
     assert other == {"status": "converged"}
     assert metrics == {}
 
 
 def test_none_goes_to_other():
-    metrics, artifacts, other = split_output({"checkpoint": None}, artifacts_dir="unused")
+    _metrics, _artifacts, other = split_output({"checkpoint": None}, artifacts_dir="unused")
     assert other == {"checkpoint": None}
 
 
@@ -148,13 +148,13 @@ def test_mixed_dict_splits_correctly_by_key():
 
 
 def test_non_dict_scalar_wraps_in_result_key():
-    metrics, artifacts, other = split_output(0.87, artifacts_dir="unused")
+    metrics, _artifacts, other = split_output(0.87, artifacts_dir="unused")
     assert metrics == {"result": 0.87}
     assert other == {}
 
 
 def test_non_dict_string_wraps_in_result_key():
-    metrics, artifacts, other = split_output("converged", artifacts_dir="unused")
+    metrics, _artifacts, other = split_output("converged", artifacts_dir="unused")
     assert other == {"result": "converged"}
     assert metrics == {}
 
@@ -189,10 +189,10 @@ def test_matplotlib_figure_is_saved_as_artifact(tmp_path):
 
 
 def test_artifacts_dir_is_created_if_missing(tmp_path):
-    fig, ax = plt.subplots()
+    fig, _ax = plt.subplots()
     nested_dir = tmp_path / "does" / "not" / "exist" / "yet"
 
-    metrics, artifacts, other = split_output(fig, artifacts_dir=nested_dir)
+    _metrics, artifacts, _other = split_output(fig, artifacts_dir=nested_dir)
     plt.close(fig)
 
     assert nested_dir.exists()

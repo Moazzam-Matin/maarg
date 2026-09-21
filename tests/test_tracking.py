@@ -1,6 +1,7 @@
 """Tests for the @track decorator module."""
 
 import pytest
+
 from maarg.storage.sqlite import SQLiteStorage
 from maarg.tracking import track
 

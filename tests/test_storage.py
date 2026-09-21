@@ -10,12 +10,12 @@ from maarg.storage.sqlite import SQLiteStorage
 
 
 def make_run(**overrides):
-    defaults = dict(
-        function="train_model",
-        experiment="my-experiment",
-        inputs={"lr": 0.01},
-        metrics={"accuracy": 0.9},
-    )
+    defaults = {
+        "function" : "train_model",
+        "experiment" : "my-experiment",
+        "inputs" : {"lr": 0.01},
+        "metrics" : {"accuracy": 0.9},
+    }
     defaults.update(overrides)
     return Run(**defaults)
 

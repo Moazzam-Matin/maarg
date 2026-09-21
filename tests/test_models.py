@@ -1,6 +1,7 @@
 """Tests for the Run data model."""
 
 import dataclasses
+
 import pytest
 
 from maarg.models import Run
@@ -8,11 +9,11 @@ from maarg.models import Run
 
 def make_run(**overrides):
     """Helper: build a Run with sensible defaults, override only what you need."""
-    defaults = dict(
-        function="train_model",
-        experiment="my-experiment",
-        inputs={"lr": 0.01, "epochs": 5},
-    )
+    defaults = {
+        "function" : "train_model",
+        "experiment" : "my-experiment",
+        "inputs" : {"lr": 0.01, "epochs": 5},
+    }
     defaults.update(overrides)
     return Run(**defaults)
 

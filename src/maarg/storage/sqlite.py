@@ -28,7 +28,7 @@ _COLUMNS = (
     "inputs", "metrics", "artifacts", "other",
 )
 
-_CREATE_TABLE_SQL = f"""
+_CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS runs (
     run_id TEXT PRIMARY KEY,
     function TEXT NOT NULL,

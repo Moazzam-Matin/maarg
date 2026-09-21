@@ -9,10 +9,8 @@ file handles) that should be skipped.
 from __future__ import annotations
 
 import sys
-from typing import Any
-
-import os
 from pathlib import Path
+from typing import Any
 
 # Defaults — overridable per-call via the @track decorator later.
 DEFAULT_MAX_SCALAR_BYTES = 1000

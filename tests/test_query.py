@@ -1,29 +1,29 @@
 """Tests for the query/comparison layer (filter_runs, top_n, best_run, compare)."""
 
 from maarg.models import Run
-from maarg.query import filter_runs, top_n, best_run, compare
+from maarg.query import best_run, compare, filter_runs, top_n
 
 
 def make_run(**overrides):
-    defaults = dict(
-        function="train_model",
-        experiment="my-experiment",
-        inputs={"lr": 0.01},
-        metrics={"accuracy": 0.9},
-    )
+    defaults = {
+        "function" : "train_model",
+        "experiment" : "my-experiment",
+        "inputs" : {"lr": 0.01},
+        "metrics" : {"accuracy": 0.9},
+    }
     defaults.update(overrides)
     return Run(**defaults)
 
 
 def make_failed_run(**overrides):
     """A run that failed — has the 'status': 'failed' marker, no metrics."""
-    defaults = dict(
-        function="train_model",
-        experiment="my-experiment",
-        inputs={"lr": 0.01},
-        metrics={},
-        other={"status": "failed", "error_type": "ValueError", "error_message": "boom"},
-    )
+    defaults = {
+        "function" : "train_model",
+        "experiment" : "my-experiment",
+        "inputs" : {"lr": 0.01},
+        "metrics" : {},
+        "other" : {"status": "failed", "error_type": "ValueError", "error_message": "boom"},
+    }
     defaults.update(overrides)
     return Run(**defaults)
 
