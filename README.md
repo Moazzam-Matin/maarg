@@ -1,4 +1,4 @@
-[![Tests](https://github.com/Moazzam-Matin/maarg/workflows/Tests/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions)
+[![CI](https://github.com/Moazzam-Matin/maarg/workflows/CI/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 
