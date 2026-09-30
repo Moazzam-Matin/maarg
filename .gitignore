@@ -35,3 +35,6 @@ htmlcov/
 # OS-specific
 .DS_Store
 Thumbs.db
+# Local databases
+temp_check.db
+*.db
