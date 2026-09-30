@@ -2,8 +2,8 @@
 
 import pytest
 
-from maarg.storage.sqlite import SQLiteStorage
-from maarg.tracking import track
+from maarg._tracking import track
+from maarg.storage._sqlite import SQLiteStorage
 
 
 @pytest.fixture

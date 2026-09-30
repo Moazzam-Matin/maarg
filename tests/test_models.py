@@ -4,7 +4,7 @@ import dataclasses
 
 import pytest
 
-from maarg.models import Run
+from maarg._models import Run
 
 
 def make_run(**overrides):

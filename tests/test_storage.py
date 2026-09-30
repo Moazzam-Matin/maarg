@@ -5,8 +5,8 @@ import time
 
 import pytest
 
-from maarg.models import Run
-from maarg.storage.sqlite import SQLiteStorage
+from maarg._models import Run
+from maarg.storage._sqlite import SQLiteStorage
 
 
 def make_run(**overrides):
@@ -36,7 +36,7 @@ def test_db_file_and_parent_folder_are_created(tmp_path):
 
 def test_default_db_path_is_dot_maarg_runs_db():
     assert SQLiteStorage.__init__.__defaults__ is not None  # sanity: has a default
-    from maarg.storage.sqlite import DEFAULT_DB_PATH
+    from maarg.storage._sqlite import DEFAULT_DB_PATH
     assert str(DEFAULT_DB_PATH) == str(__import__("pathlib").Path(".maarg") / "runs.db")
 
 

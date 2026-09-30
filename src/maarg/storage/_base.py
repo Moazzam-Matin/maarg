@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from maarg.models import Run
+from maarg._models import Run
 
 
 class StorageBackend(ABC):

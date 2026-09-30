@@ -15,15 +15,15 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable, TypeVar, overload
 
-from maarg.capture import (
+from maarg._capture import (
     DEFAULT_MAX_COLLECTION_LENGTH,
     DEFAULT_MAX_SCALAR_BYTES,
     filter_inputs,
     split_output,
 )
-from maarg.models import Run
-from maarg.storage.base import StorageBackend
-from maarg.storage.sqlite import SQLiteStorage
+from maarg._models import Run
+from maarg.storage._base import StorageBackend
+from maarg.storage._sqlite import SQLiteStorage
 
 F = TypeVar("F", bound=Callable[..., Any])
 

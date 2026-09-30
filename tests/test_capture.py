@@ -5,11 +5,11 @@ from pathlib import Path
 import matplotlib
 import matplotlib.pyplot as plt
 
-from maarg.capture import filter_inputs, is_loggable
+from maarg._capture import filter_inputs, is_loggable
 
 matplotlib.use("Agg")  # non-interactive backend, no display needed for tests
 
-from maarg.capture import split_output
+from maarg._capture import split_output
 
 # ── Scalars ──────────────────────────────────────────────────────────
 

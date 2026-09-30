@@ -1,7 +1,7 @@
 """Tests for the query/comparison layer (filter_runs, top_n, best_run, compare)."""
 
-from maarg.models import Run
-from maarg.query import best_run, compare, filter_runs, top_n
+from maarg._models import Run
+from maarg._query import best_run, compare, filter_runs, top_n
 
 
 def make_run(**overrides):

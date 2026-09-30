@@ -8,11 +8,12 @@ maarg — zero-instrumentation experiment tracking for Python.
         return {"accuracy": 0.95}
 """
 
-from maarg.models import Run
-from maarg.query import best_run, compare, filter_runs, top_n
-from maarg.storage.base import StorageBackend
-from maarg.storage.sqlite import SQLiteStorage
-from maarg.tracking import track
+from maarg._convenience import best_run, filter_runs, get_runs, top_n
+from maarg._models import Run
+from maarg._query import compare
+from maarg._tracking import track
+from maarg.storage._base import StorageBackend as StorageBackend
+from maarg.storage._sqlite import SQLiteStorage as SQLiteStorage
 
 __all__ = [
     "Run",
@@ -21,6 +22,7 @@ __all__ = [
     "best_run",
     "compare",
     "filter_runs",
+    "get_runs",
     "top_n",
     "track",
 ]

@@ -16,8 +16,8 @@ import json
 import sqlite3
 from pathlib import Path
 
-from maarg.models import Run
-from maarg.storage.base import StorageBackend
+from maarg._models import Run
+from maarg.storage._base import StorageBackend
 
 DEFAULT_DB_PATH = Path(".maarg") / "runs.db"
 

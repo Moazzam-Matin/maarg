@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from maarg.models import Run
+from maarg._models import Run
 
 
 def _is_failed(run: Run) -> bool:
