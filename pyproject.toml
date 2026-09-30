@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maarg"
-version = "0.1.0"
+version = "0.2.0"
 description = "Zero-instrumentation experiment tracking for Python — a decorator that auto-captures inputs and outputs, no logging calls required."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 authors = [
-    {name = "Moazzam Matin", email = "matin.moazzam01@gmail.com"}
+    {name = "Moazzam Matin"}
 ]
 keywords = ["experiment-tracking", "mlops", "machine-learning", "decorator", "introspection"]
 classifiers = [
