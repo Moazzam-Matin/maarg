@@ -8,6 +8,14 @@ maarg — zero-instrumentation experiment tracking for Python.
         return {"accuracy": 0.95}
 """
 
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("maarg")
+except PackageNotFoundError:
+    # Fallback for uninstalled local development mode
+    __version__ = "0.2.0"
+
 from maarg._convenience import best_run, filter_runs, get_runs, top_n
 from maarg._models import Run
 from maarg._query import compare
