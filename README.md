@@ -1,27 +1,34 @@
+# maarg
+
 [![CI](https://github.com/Moazzam-Matin/maarg/workflows/CI/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
-[![TestPyPI version](https://img.shields.io/pypi/v/maarg.svg?pypiBaseUrl=https%3A%2F%2Ftest.pypi.org)](https://test.pypi.org/project/maarg/)
+[![PyPI version](https://img.shields.io/pypi/v/maarg.svg)](https://pypi.org/project/maarg/)
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/maarg_logo_dark.svg">
-    <img alt="maarg - Zero-Boilerplate Experiment Tracking" src="docs/assets/maarg_logo.svg" width="320">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo_dark.svg">
+    <img alt="maarg - Zero-Boilerplate Experiment Tracking"
+    src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo.svg"
+    width="320">
   </picture>
 </p>
 
 <h3 align="center">Experiment tracking with zero logging code.</h3>
 
 <p align="center">
-  Put <code>@track</code> on a function. Every execution—arguments, returns, metrics, execution timing, and failures—is automatically saved to local storage for instant querying.
+  Put <code>@track</code> on a function. Every execution—arguments,
+  returns, metrics, execution timing, and failures—is automatically saved
+  to local storage for instant querying.
 </p>
 
 ---
 
 ## How It Works
 
-`maarg` sits transparently at function boundaries. It reads signature parameter defaults and runtime return payloads without requiring explicit parameter or metric logging statements inside your function logic.
-
+`maarg` sits transparently at function boundaries. It reads signature parameter
+defaults and runtime return payloads without requiring explicit parameter or
+metric logging statements inside your function logic.
 
 ```text
   ┌────────────────────────┐
@@ -78,9 +85,11 @@ lr=0.001  epochs=100  error=3.24e-01
 
 ## Project & Storage Structure
 
-`maarg` enforces a clean public package API while automatically managing runtime tracking databases and artifact outputs.
+`maarg` enforces a clean public package API while automatically managing runtime
+tracking databases and artifact outputs.
 
 ### Repository Layout
+
 ```text
 maarg/
 ├── .github/
@@ -113,7 +122,9 @@ maarg/
 ```
 
 ### Runtime Storage Directory (`.maarg/`)
-When you execute tracked functions, `maarg` initializes a local directory relative to your working workspace:
+
+When you execute tracked functions, `maarg` initializes a local directory
+relative to your working workspace:
 
 ```text
 your_project/
@@ -134,7 +145,9 @@ your_project/
 pip install maarg
 ```
 
-Supports Python 3.9+ with zero required external server dependencies. To automatically capture Matplotlib plots into `.maarg/artifacts/`, install with plotting support:
+Supports Python 3.9+ with zero required external server dependencies.
+To automatically capture Matplotlib plots into `.maarg/artifacts/`,
+install with plotting support:
 
 ```bash
 pip install "maarg[plotting]"
@@ -144,7 +157,9 @@ pip install "maarg[plotting]"
 
 ## Querying Runs
 
-Query functions operate as pure functions on collections of `Run` objects. You can fetch runs effortlessly using the top-level `get_runs()` helper or pass custom storage backends explicitly.
+Query functions operate as pure functions on collections of `Run` objects.
+You can fetch runs effortlessly using the top-level `get_runs()` helper or
+pass custom storage backends explicitly.
 
 ```python
 from maarg import get_runs, filter_runs, top_n, best_run, compare
@@ -166,7 +181,8 @@ specific = filter_runs(runs, learning_rate=0.01)
 comparison = compare(top_3)
 ```
 
-By default, failed runs are filtered out of ranking queries (`only_successful=True`). Pass `only_successful=False` to include failed executions.
+By default, failed runs are filtered out of ranking queries (`only_successful=True`).
+Pass `only_successful=False` to include failed executions.
 
 ---
 
@@ -185,9 +201,14 @@ By default, failed runs are filtered out of ranking queries (`only_successful=Tr
 | `duration_sec` | Execution duration in seconds |
 
 ### Value Safety & Limits
-- **Inputs:** Simple scalar values (numbers, strings, booleans) and collections with ≤ 20 elements or ≤ 1000 bytes are recorded. Large arrays, dataframes, or complex objects are automatically skipped to avoid database bloat.
-- **Outputs:** Dictionary return values with numeric scalars become `metrics`. Returned Matplotlib figures are serialized to PNG artifacts inside `.maarg/artifacts/<run_id>/`.
-- **Failures:** Exceptions are caught, recorded with `other["status"] = "failed"` along with the exception class and traceback message, and then re-raised unchanged.
+
+- **Inputs:** Simple scalar values (numbers, strings, booleans) and collections
+with ≤ 20 elements or ≤ 1000 bytes are recorded. Large arrays, dataframes, or
+complex objects are automatically skipped to avoid database bloat.
+- **Outputs:** Dictionary return values with numeric scalars become `metrics`.
+Returned Matplotlib figures are serialized to PNG artifacts inside `.maarg/artifacts/<run_id>/`.
+- **Failures:** Exceptions are caught, recorded with `other["status"] = "failed"`
+along with the exception class and traceback message, and then re-raised unchanged.
 
 ---
 
