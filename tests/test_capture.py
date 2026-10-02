@@ -5,11 +5,14 @@ from pathlib import Path
 import matplotlib
 import matplotlib.pyplot as plt
 
-from maarg._capture import filter_inputs, is_loggable
-
 matplotlib.use("Agg")  # non-interactive backend, no display needed for tests
 
-from maarg._capture import split_output
+from maarg._capture import (
+    _register_serializer,
+    filter_inputs,
+    is_loggable,
+    split_output,
+)
 
 # ── Scalars ──────────────────────────────────────────────────────────
 
@@ -218,3 +221,37 @@ def test_artifacts_dir_is_created_if_missing(tmp_path):
 def test_empty_dict_output_returns_all_empty():
     metrics, artifacts, other = split_output({}, artifacts_dir="unused")
     assert metrics == {} and artifacts == [] and other == {}
+
+
+def test_registered_serializer_handles_custom_type(tmp_path):
+    class CustomResult:
+        pass
+
+    def can_serialize(value):
+        return isinstance(value, CustomResult)
+
+    def serialize(value, name, artifacts_dir):
+        path = Path(artifacts_dir) / f"{name}.custom"
+        path.write_text("custom result")
+        return str(path)
+
+    try:
+        _register_serializer(
+            can_serialize,
+            serialize,
+            "custom",
+        )
+
+        _metrics, artifacts, _other = split_output(
+            {"result": CustomResult()},
+            artifacts_dir=tmp_path,
+        )
+    finally:
+        from maarg._capture import _SERIALIZERS
+
+        _SERIALIZERS.pop()
+
+    assert len(artifacts) == 1
+    assert artifacts[0]["name"] == "result"
+    assert artifacts[0]["type"] == "custom"
+    assert Path(artifacts[0]["path"]).exists()

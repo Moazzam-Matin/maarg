@@ -9,8 +9,9 @@ file handles) that should be skipped.
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 # Defaults — overridable per-call via the @track decorator later.
 DEFAULT_MAX_SCALAR_BYTES = 1000
@@ -70,17 +71,43 @@ def filter_inputs(
 
 # ── Output splitting ─────────────────────────────────────────────────
 
+@dataclass(frozen=True)
+class _Serializer:
+    can_serialize: Callable[[Any], bool]
+    serialize: Callable[[Any, str, str | Path], str]
+    artifact_type: str
+
+
+_SERIALIZERS: list[_Serializer] = []
+
+
+def _register_serializer(
+    value_type: type | Callable[[Any], bool],
+    serialize: Callable[[Any, str, str | Path], str],
+    artifact_type: str,
+) -> None:
+    if isinstance(value_type, type):
+        can_serialize = lambda value: isinstance(value, value_type)
+    else:
+        can_serialize = value_type
+
+    _SERIALIZERS.append(
+        _Serializer(
+            can_serialize=can_serialize,
+            serialize=serialize,
+            artifact_type=artifact_type,
+        )
+    )
+
+
+def _find_serializer(value: Any) -> _Serializer | None:
+    for serializer in _SERIALIZERS:
+        if serializer.can_serialize(value):
+            return serializer
+    return None
+
 
 OTHER_REPR_MAX_LEN = 200
-
-
-def _is_matplotlib_figure(value: Any) -> bool:
-    """Check for a matplotlib Figure without hard-depending on matplotlib."""
-    try:
-        import matplotlib.figure
-        return isinstance(value, matplotlib.figure.Figure)
-    except ImportError:
-        return False
 
 
 def _save_figure(fig: Any, name: str, artifacts_dir: str | Path) -> str:
@@ -93,6 +120,21 @@ def _save_figure(fig: Any, name: str, artifacts_dir: str | Path) -> str:
 
     fig.savefig(path)
     return str(path)
+
+
+def _is_matplotlib_figure(value: Any) -> bool:
+    """Check for a matplotlib Figure without hard-depending on matplotlib."""
+    try:
+        import matplotlib.figure
+        return isinstance(value, matplotlib.figure.Figure)
+    except ImportError:
+        return False
+
+_register_serializer(
+    _is_matplotlib_figure,
+    _save_figure,
+    "chart",
+)
 
 
 def split_output(
@@ -124,9 +166,15 @@ def split_output(
             other[name] = value
         elif isinstance(value, (int, float)):
             metrics[name] = value
-        elif _is_matplotlib_figure(value):
-            path = _save_figure(value, name, artifacts_dir)
-            artifacts.append({"name": name, "path": path, "type": "chart"})
+        elif (serializer := _find_serializer(value)) is not None:
+            path = serializer.serialize(value, name, artifacts_dir)
+            artifacts.append(
+                {
+                    "name": name,
+                    "path": path,
+                    "type": serializer.artifact_type,
+                }
+            )
         elif isinstance(value, (str, type(None))):
             other[name] = value
         else:
