@@ -188,6 +188,22 @@ def test_matplotlib_figure_is_saved_as_artifact(tmp_path):
     assert saved_path.suffix == ".png"
 
 
+def test_artifact_name_cannot_escape_artifacts_directory(tmp_path):
+    fig, _ax = plt.subplots()
+
+    _metrics, artifacts, _other = split_output(
+        {"../../outside": fig},
+        artifacts_dir=tmp_path,
+    )
+    plt.close(fig)
+
+    saved_path = Path(artifacts[0]["path"])
+
+    assert saved_path.exists()
+    assert saved_path.parent == tmp_path
+    assert artifacts[0]["name"] == "../../outside"
+
+
 def test_artifacts_dir_is_created_if_missing(tmp_path):
     fig, _ax = plt.subplots()
     nested_dir = tmp_path / "does" / "not" / "exist" / "yet"

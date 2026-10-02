@@ -84,10 +84,13 @@ def _is_matplotlib_figure(value: Any) -> bool:
 
 
 def _save_figure(fig: Any, name: str, artifacts_dir: str | Path) -> str:
-    """Save a figure to `artifacts_dir/<name>.png` and return the path."""
+    """Save a figure to `artifacts_dir/<safe-name>.png` and return the path."""
     artifacts_dir = Path(artifacts_dir)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
-    path = artifacts_dir / f"{name}.png"
+
+    safe_name = Path(name).name
+    path = artifacts_dir / f"{safe_name}.png"
+
     fig.savefig(path)
     return str(path)
 

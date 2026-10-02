@@ -131,7 +131,7 @@ def track(
                 )
                 try:
                     backend.save(failed_run)
-                except Exception as tracking_exc:
+                except Exception as tracking_exc:   # noqa: BLE001 - record failed runs, then re-raise
                     warnings.warn(
                         f"Failed to save tracking data for run {run_id}: {tracking_exc}",
                         MaargTrackingWarning,
