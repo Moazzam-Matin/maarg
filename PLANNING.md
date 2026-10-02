@@ -38,12 +38,12 @@ not just ones using a supported training framework.
   real-world dogfooding on a second project (recommendation-engine), which
   surfaced and fixed real bugs before and after launch
 
-**Deliberately not in v1** (moved out during planning, not an oversight):
+### Deliberately not in v1
+
+(Moved out during planning, not an oversight.)
 
 - CLI — reasoned that maarg's users are already in Python where the query API
   is directly usable; revisit only if real demand appears
-- Serializer registry — matplotlib support is currently a single hardcoded
-  check in `_capture.py`, not yet a general extensible mechanism
 
 ## v1 Non-goals
 
@@ -59,7 +59,7 @@ not just ones using a supported training framework.
 1. **Storage backend interface** — where runs live (SQLite now, anything
    later) — **done**
 2. **Serializer registry** — how output types are recognized and captured —
-   **not yet built**; matplotlib is hardcoded as a special case (0.3.0 target)
+   **done** (0.3.0)
 3. **Capture hooks/callbacks** — react to a completed run (webhook, Slack,
    etc.) — **not yet built**, no committed timeline
 
@@ -92,7 +92,8 @@ MIT
 - **Phase 1:** Core `@track` decorator + input filtering + local SQLite
   storage — **done**
 - **Phase 2:** Output classification (metrics, dicts, figures) — **done**
-  (as a hardcoded special case, not yet the general serializer registry)
+  (originally shipped with matplotlib as a hardcoded special case; generalized
+  through the serializer registry in 0.3.0)
 - **Phase 3:** Query API — **done** (CLI deliberately deferred, see above)
 - **Phase 4:** README, logo, CI badges, public GitHub repo, PyPI release —
   **done**
@@ -110,33 +111,35 @@ technical audit of the 0.2.0 codebase.
 
 **Objectives:**
 
-1. **Failure-safe tracking.** Currently, `backend.save()` is called unguarded
-   in both the success and failure paths of `@track`'s wrapper. If saving a
-   `Run` itself raises (e.g. a non-JSON-serializable value slips past input
-   filtering), that error currently replaces the user's actual result or —
-   worse — replaces their original exception on the failure path. Fix:
-   - Wrap both `save()` calls.
+1. **Failure-safe tracking.** — **done**
    - Add a `strict: bool = False` parameter to `@track`.
    - On the **success path**: if `save()` fails, `strict=False` emits a
      `MaargTrackingWarning` and still returns the user's result unchanged;
-     `strict=True` raises a `MaargTrackingError` (chained via `from`) instead.
-   - On the **failure path**: a `save()` failure always only warns
-     (`MaargTrackingWarning`), regardless of `strict` — the user's original
+     `strict=True` raises a `MaargTrackingError` chained from the storage
+     exception.
+   - On the **failure path**: if `save()` fails, always emit a
+     `MaargTrackingWarning` regardless of `strict`. The user's original
      exception must reach them unchanged in every case. This is treated as a
      non-negotiable guarantee, not something a flag can override, since it's
      the core promise failure-tracking exists to keep.
-2. **Artifact name sanitization.** `_capture.py` currently builds
-   `artifacts_dir / f"{name}.png"` directly from a user-controlled dictionary
-   key, allowing path-traversal-style names (e.g. `"../../something"`) to
-   influence the resulting file path. Fix: sanitize the name or generate a
-   safe identifier, independent of the user-facing artifact name.
-3. **SQLite indexes** on `function`, `experiment`, and `timestamp` — cheap,
-   no behavior change, matters once run counts grow past a few thousand.
-4. **Serializer registry.** Replace the hardcoded
-   `_is_matplotlib_figure()` check in `_capture.py` with a real, extensible
-   registration mechanism, so adding support for a new output type (Plotly,
-   PIL, a custom result class) doesn't require editing core code. This was
-   always planned (see Architecture above) and is now overdue.
+
+2. **Artifact name sanitization.** — **done**
+   `_capture.py` currently builds `artifacts_dir / f"{name}.png"` directly from
+   a user-controlled dictionary key, allowing path-traversal-style names
+   (e.g. `"../../something"`) to influence the resulting file path. Fix:
+   sanitize the name or generate a safe identifier, independent of the
+   user-facing artifact name.
+
+3. **SQLite indexes** on `function`, `experiment`, and `timestamp` — **done**
+   Cheap, no behavior change, matters once run counts grow past a few
+   thousand.
+
+4. **Serializer registry.** — **done**
+   Replace the hardcoded `_is_matplotlib_figure()` check in `_capture.py` with
+   a real, extensible registration mechanism, so adding support for a new
+   output type (Plotly, PIL, a custom result class) doesn't require editing
+   core code. This was always planned (see Architecture above) and is now
+   overdue.
 
 **Explicitly deferred past 0.3.0** (known, not forgotten):
 
@@ -147,4 +150,4 @@ technical audit of the 0.2.0 codebase.
 - The CLI
 - The step-wise/imperative logging design question
 
-Last Updated: 2-October-2026
+Last Updated: 2026-10-03
