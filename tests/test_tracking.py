@@ -2,6 +2,7 @@
 
 import pytest
 
+from maarg._exceptions import MaargTrackingError, MaargTrackingWarning
 from maarg._tracking import track
 from maarg.storage._sqlite import SQLiteStorage
 
@@ -9,6 +10,11 @@ from maarg.storage._sqlite import SQLiteStorage
 @pytest.fixture
 def storage(tmp_path):
     return SQLiteStorage(db_path=tmp_path / "test_tracking.db")
+
+
+class FailingStorage:
+    def save(self, run):
+        raise RuntimeError("storage is unavailable")
 
 
 def test_track_bare_decorator_records_run(storage):
@@ -28,6 +34,59 @@ def test_track_bare_decorator_records_run(storage):
     assert run.inputs == {"learning_rate": 0.02}
     assert run.metrics == {"loss": 0.05}
     assert run.duration_sec >= 0.0
+
+
+def test_tracking_save_failure_does_not_replace_success_result():
+    @track(storage=FailingStorage())
+    def compute():
+        return {"accuracy": 0.95}
+
+    with pytest.warns(
+    MaargTrackingWarning,
+    match="Failed to save tracking data",
+):
+        result = compute()
+
+    assert result == {"accuracy": 0.95}
+
+
+def test_tracking_save_failure_raises_in_strict_mode():
+    @track(storage=FailingStorage(), strict=True)
+    def compute():
+        return {"accuracy": 0.95}
+
+    with pytest.raises(MaargTrackingError) as exc_info:
+        compute()
+
+    assert "Failed to save tracking data" in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, RuntimeError)
+    assert str(exc_info.value.__cause__) == "storage is unavailable"
+
+
+def test_tracking_save_failure_preserves_original_exception():
+    @track(storage=FailingStorage(), strict=True)
+    def compute():
+        raise ValueError("original function error")
+
+    with pytest.warns(
+        MaargTrackingWarning,
+        match="Failed to save tracking data",
+    ), pytest.raises(ValueError, match="original function error"):
+        compute()
+
+
+def test_track_strict_defaults_to_false():
+    @track(storage=FailingStorage())
+    def compute():
+        return 42
+
+    with pytest.warns(
+        MaargTrackingWarning,
+        match="Failed to save tracking data",
+    ):
+        result = compute()
+
+    assert result == 42
 
 
 def test_track_with_custom_experiment_and_limits(storage):

@@ -12,6 +12,7 @@ import functools
 import inspect
 import time
 import uuid
+import warnings
 from pathlib import Path
 from typing import Any, Callable, TypeVar, overload
 
@@ -21,6 +22,7 @@ from maarg._capture import (
     filter_inputs,
     split_output,
 )
+from maarg._exceptions import MaargTrackingError, MaargTrackingWarning
 from maarg._models import Run
 from maarg.storage._base import StorageBackend
 from maarg.storage._sqlite import SQLiteStorage
@@ -51,8 +53,8 @@ def track(
     artifacts_dir: str | Path = Path(".maarg") / "artifacts",
     max_scalar_bytes: int = DEFAULT_MAX_SCALAR_BYTES,
     max_collection_length: int = DEFAULT_MAX_COLLECTION_LENGTH,
+    strict: bool = False,
 ) -> Callable[[F], F]: ...
-
 
 def track(
     _func: F | None = None,
@@ -62,7 +64,9 @@ def track(
     artifacts_dir: str | Path = Path(".maarg") / "artifacts",
     max_scalar_bytes: int = DEFAULT_MAX_SCALAR_BYTES,
     max_collection_length: int = DEFAULT_MAX_COLLECTION_LENGTH,
+    strict: bool = False,
 ) -> Any:
+
     """
     Decorator to track function execution, parameters, metrics, and artifacts.
 
@@ -125,7 +129,15 @@ def track(
                         "error_message": str(exc),
                     },
                 )
-                backend.save(failed_run)
+                try:
+                    backend.save(failed_run)
+                except Exception as tracking_exc:
+                    warnings.warn(
+                        f"Failed to save tracking data for run {run_id}: {tracking_exc}",
+                        MaargTrackingWarning,
+                        stacklevel=2,
+                    )
+
                 raise
 
             duration_sec = time.perf_counter() - start_time
@@ -145,7 +157,20 @@ def track(
                 duration_sec=duration_sec,
             )
 
-            backend.save(successful_run)
+            try:
+                backend.save(successful_run)
+            except Exception as tracking_exc:
+                if strict:
+                    raise MaargTrackingError(
+                        f"Failed to save tracking data for run {run_id}"
+                    ) from tracking_exc
+
+                warnings.warn(
+                    f"Failed to save tracking data for run {run_id}: {tracking_exc}",
+                    MaargTrackingWarning,
+                    stacklevel=2,
+                )
+
             return result
 
         return wrapper  # type: ignore[return-value]
