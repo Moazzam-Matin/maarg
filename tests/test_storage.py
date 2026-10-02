@@ -40,6 +40,26 @@ def test_default_db_path_is_dot_maarg_runs_db():
     assert str(DEFAULT_DB_PATH) == str(__import__("pathlib").Path(".maarg") / "runs.db")
 
 
+def test_expected_indexes_are_created(tmp_path):
+    db_path = tmp_path / "runs.db"
+    SQLiteStorage(db_path=db_path)
+
+    conn = sqlite3.connect(db_path)
+    try:
+        rows = conn.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type = 'index' AND tbl_name = 'runs'"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    index_names = {row[0] for row in rows}
+
+    assert "idx_runs_function" in index_names
+    assert "idx_runs_experiment" in index_names
+    assert "idx_runs_timestamp" in index_names
+
+
 # ── save + get_by_id ─────────────────────────────────────────────────
 
 def test_save_and_get_by_id_round_trips_a_run(storage):

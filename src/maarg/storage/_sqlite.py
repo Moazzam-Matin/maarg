@@ -41,6 +41,20 @@ CREATE TABLE IF NOT EXISTS runs (
     other TEXT NOT NULL
 )
 """
+_CREATE_INDEX_SQL = (
+    (
+        "CREATE INDEX IF NOT EXISTS idx_runs_function "
+        "ON runs (function)"
+    ),
+    (
+        "CREATE INDEX IF NOT EXISTS idx_runs_experiment "
+        "ON runs (experiment)"
+    ),
+    (
+        "CREATE INDEX IF NOT EXISTS idx_runs_timestamp "
+        "ON runs (timestamp)"
+    ),
+)
 
 _SELECT_COLUMNS_SQL = ", ".join(_COLUMNS)
 
@@ -60,6 +74,8 @@ class SQLiteStorage(StorageBackend):
         conn = self._connect()
         try:
             conn.execute(_CREATE_TABLE_SQL)
+            for sql in _CREATE_INDEX_SQL:
+                conn.execute(sql)
             conn.commit()
         finally:
             conn.close()
