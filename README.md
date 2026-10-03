@@ -31,8 +31,6 @@
 
 ### 1. Install
 
-Install `maarg` directly from PyPI:
-
 ```bash
 pip install maarg
 ```
