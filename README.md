@@ -54,7 +54,7 @@ The core API is Python-first and local-first.
               │
               ▼
   ┌────────────────────────┐
-  │ Capture inputs & time   │
+  │ Capture inputs & time  │
   └───────────┬────────────┘
               │
               ▼
@@ -80,7 +80,7 @@ The core API is Python-first and local-first.
   │ Query & compare runs   │
   │ get_runs / top_n /     │
   │ best_run / filter /    │
-  │ compare                 │
+  │ compare                │
   └────────────────────────┘
 ```
 
