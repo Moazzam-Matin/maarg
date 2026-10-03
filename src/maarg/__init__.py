@@ -14,7 +14,7 @@ try:
     __version__ = version("maarg")
 except PackageNotFoundError:
     # Fallback for uninstalled local development mode
-    __version__ = "0.3.0"
+    __version__ = "0.3.1"
 
 from maarg._convenience import best_run, filter_runs, get_runs, top_n
 from maarg._exceptions import MaargTrackingError, MaargTrackingWarning
