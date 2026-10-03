@@ -1,457 +1,347 @@
-# maarg
-
-[![CI](https://github.com/Moazzam-Matin/maarg/workflows/CI/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
-[![PyPI version](https://img.shields.io/pypi/v/maarg.svg)](https://pypi.org/project/maarg/)
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo_dark.svg">
-    <img alt="maarg - Zero-Boilerplate Experiment Tracking"
-    src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo.svg"
-    width="320">
-  </picture>
-</p>
-
-<h3 align="center">Experiment tracking with zero logging code.</h3>
+<p align="center"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo_dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo.svg">
+  <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_logo.svg" alt="maarg logo" width="220">
+</picture></p>
 
 <p align="center">
-  Put <code>@track</code> on a function. maarg automatically captures
-  inputs, outputs, execution timing, failures, and supported artifacts,
-  then stores each run locally for querying and comparison.
+  <strong>Track Experiments with Zero Boilerplate.</strong>
 </p>
 
----
+<p align="center">
+  <a href="https://pypi.org/project/maarg/">
+    <img src="https://img.shields.io/pypi/v/maarg.svg" alt="PyPI">
+  </a>
+  <a href="https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml">
+    <img src="https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml/badge.svg" alt="CI">
+  </a>
+  <a href="https://pypi.org/project/maarg/">
+    <img src="https://img.shields.io/pypi/pyversions/maarg.svg" alt="Python">
+  </a>
+  <a href="https://github.com/Moazzam-Matin/maarg/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0">
+  </a>
+</p>
 
 ## What is maarg?
 
-**maarg** is a lightweight, zero-instrumentation experiment tracker for Python.
+`maarg` is a lightweight experiment tracking library for Python built to stay out of your way. With a simple `@track` decorator, it automatically records the information behind your experiments — from inputs and metrics to artifacts, execution time, and failures — so you can understand and compare your runs without adding tracking code throughout your project.
 
-Instead of adding `log_param()`, `log_metric()`, or framework-specific
-autologging calls, decorate a function with `@track`. maarg inspects the
-function signature and return value, records the useful parts of the
-execution, and persists the resulting `Run`.
+## Start Tracking in 3 Steps
 
-It is designed for parameterized functions such as:
+### 1. Install
 
-- hyperparameter sweeps
-- algorithm benchmarks
-- backtests and simulations
-- repeated data-science experiments
-- small local experiments that do not need a tracking server
-
-The core API is Python-first and local-first.
-
----
-
-## How It Works
-
-```text
-  ┌────────────────────────┐
-  │      @track function   │
-  └───────────┬────────────┘
-              │
-              ▼
-  ┌────────────────────────┐
-  │ Capture inputs & time   │
-  └───────────┬────────────┘
-              │
-              ▼
-  ┌────────────────────────┐
-  │ Execute user function  │
-  └───────────┬────────────┘
-              │
-              ▼
-  ┌────────────────────────┐
-  │ Classify return value   │
-  │ metrics / artifacts /   │
-  │ other                   │
-  └───────────┬────────────┘
-              │
-              ▼
-  ┌────────────────────────┐
-  │ SQLite persistence     │
-  │ .maarg/runs.db         │
-  └───────────┬────────────┘
-              │
-              ▼
-  ┌────────────────────────┐
-  │ Query & compare runs   │
-  │ get_runs / top_n /     │
-  │ best_run / filter /    │
-  │ compare                 │
-  └────────────────────────┘
-```
-
-No tracking server is required.
-
----
-
-## Quickstart
-
-### Install
+Install `maarg` directly from PyPI:
 
 ```bash
 pip install maarg
 ```
 
-For automatic Matplotlib figure capture:
+If you want artifact capture for Matplotlib figures, install the optional plotting dependencies:
 
 ```bash
 pip install "maarg[plotting]"
 ```
 
-### Track a function
+### 2. Track your first experiment
 
-```python
-from maarg import track, get_runs, top_n
-
-@track(experiment="learning-rate-sweep")
-def fit(learning_rate, epochs=100):
-    w = 0.0
-
-    for _ in range(epochs):
-        grad = sum(
-            2 * (w * x - 3 * x) * x
-            for x in range(1, 6)
-        ) / 5
-        w -= learning_rate * grad
-
-    return {"error": abs(w - 3)}
-
-for lr in (0.001, 0.003, 0.01):
-    fit(learning_rate=lr)
-
-for run in top_n(
-    get_runs(),
-    metric="error",
-    n=3,
-    higher_is_better=False,
-):
-    print(
-        f"lr={run.inputs['learning_rate']:<6} "
-        f"epochs={run.inputs['epochs']} "
-        f"error={run.metrics['error']:.2e}"
-    )
-```
-
-A tracked execution creates a local SQLite database automatically:
-
-```text
-your_project/
-├── .maarg/
-│   ├── runs.db
-│   └── artifacts/
-│       └── <run_id>/
-│           └── <artifact>.png
-├── train.py
-└── notebook.ipynb
-```
-
----
-
-## Public API
-
-The package currently exports:
-
-```python
-from maarg import (
-    track,
-    get_runs,
-    filter_runs,
-    top_n,
-    best_run,
-    compare,
-    Run,
-    StorageBackend,
-    SQLiteStorage,
-    MaargTrackingError,
-    MaargTrackingWarning,
-)
-```
-
-### `@track`
-
-The decorator supports both forms:
-
-```python
-@track
-def train(lr=0.01):
-    return {"accuracy": 0.95}
-```
-
-and:
-
-```python
-@track(
-    experiment="resnet-50",
-    artifacts_dir="results/artifacts",
-    max_scalar_bytes=2000,
-    max_collection_length=20,
-)
-def evaluate(lr, batch_size):
-    return {"loss": 0.12}
-```
-
-The experiment name defaults to the decorated function's name.
-
-### Querying
-
-```python
-from maarg import get_runs, filter_runs, top_n, best_run, compare
-
-runs = get_runs()
-
-exp_runs = get_runs(experiment="learning-rate-sweep")
-
-specific = filter_runs(
-    runs,
-    learning_rate=0.01,
-)
-
-top_3 = top_n(
-    runs,
-    metric="error",
-    n=3,
-    higher_is_better=False,
-)
-
-best = best_run(
-    runs,
-    metric="error",
-    higher_is_better=False,
-)
-
-comparison = compare(top_3)
-```
-
-Top-level query helpers can read directly from storage, or operate on an
-already-fetched collection of `Run` objects.
-
-By default, ranking and filtering helpers exclude runs explicitly marked as
-failed. Use `only_successful=False` to include failed runs.
-
----
-
-## What Gets Recorded
-
-Each tracked execution produces an immutable `Run` containing:
-
-| Field | Description |
-| --- | --- |
-| `run_id` | Unique UUID for the execution |
-| `timestamp` | ISO 8601 UTC timestamp |
-| `function` | Decorated function name |
-| `experiment` | Experiment label |
-| `inputs` | Loggable function arguments, including defaults |
-| `metrics` | Numeric values returned by the function |
-| `artifacts` | Serialized supported artifacts with name, path, and type |
-| `other` | Strings, `None`, booleans, failed-run metadata, or truncated representations |
-| `duration_sec` | Function execution time in seconds |
-
-### Input filtering
-
-maarg intentionally avoids putting large or complex Python objects into the
-tracking database.
-
-By default:
-
-- simple scalars are recorded when they fit within `max_scalar_bytes`
-- lists, tuples, and dictionaries are recorded only when they contain at most
-  `max_collection_length` items and all nested values are loggable
-- large arrays, dataframes, custom objects, file handles, and other complex
-  objects are skipped
-
-Defaults:
-
-| Option | Default |
-| --- | ---: |
-| `max_scalar_bytes` | `1000` |
-| `max_collection_length` | `20` |
-
----
-
-## Output Capture
-
-maarg classifies return values into three categories:
-
-### Metrics
-
-Numeric `int` and `float` values become metrics.
-
-```python
-return {"accuracy": 0.95, "loss": 0.12}
-```
-
-### Artifacts
-
-Supported artifact types are serialized to the configured artifacts directory.
-
-Matplotlib figures are supported when Matplotlib is installed:
-
-```python
-import matplotlib.pyplot as plt
-
-@track(experiment="plot-test")
-def make_plot():
-    fig, ax = plt.subplots()
-    ax.plot([1, 2, 3])
-    return {"figure": fig, "score": 0.91}
-```
-
-The current implementation uses an internal serializer registry so artifact
-handling can be extended without hard-coding every output type into the main
-classification logic.
-
-Artifact filenames are sanitized before being converted into filesystem paths.
-
-### Other values
-
-Strings and `None` are stored as-is. Booleans are stored as non-metric
-values. Unrecognized objects are represented using a truncated `repr()`
-to avoid storing arbitrarily large values.
-
----
-
-## Failure-Safe Tracking
-
-Tracking failures should not replace the user's actual function failures.
-
-If the decorated function raises an exception, maarg:
-
-1. records the failed run when possible
-2. stores the exception type and message
-3. emits a `MaargTrackingWarning` if persistence itself fails
-4. re-raises the original user exception unchanged
-
-### Strict mode
-
-For successful functions, persistence failures can be made fatal:
+Add `@track` to your experiment function and run it as usual. `maarg` automatically captures the supported inputs and the numeric result as a metric, along with execution time and run status.
 
 ```python
 from maarg import track
 
-@track(experiment="important-run", strict=True)
-def train():
-    return {"accuracy": 0.95}
+@track
+def train_model(learning_rate=0.01, epochs=10):
+    accuracy = 0.92
+    return accuracy
+
+train_model()
 ```
 
-With `strict=False` (the default), a failure to persist a successful run
-emits `MaargTrackingWarning` and the user's result is returned normally.
+### 3. Retrieve your runs
 
-With `strict=True`, a persistence failure raises `MaargTrackingError`.
+Retrieve your tracked runs with the simple query API:
 
-The original exception from a failed user function is always preserved,
-regardless of `strict`.
+```python
+from maarg import get_runs
 
----
+runs = get_runs(function="train_model")
 
-## Storage
+for run in runs:
+    print(run)
+```
 
-### Default SQLite storage
+Your runs are stored locally in SQLite and can be queried, filtered, compared, and ranked using the `maarg` query API.
 
-The default backend stores runs in:
+## Features
+
+### 🎯 Zero-Boilerplate Tracking
+
+Track Python functions with a simple `@track` decorator. No manual logging calls or experiment setup required.
+
+### 📥 Automatic Input Capture
+
+Automatically captures supported function inputs, including scalars and common collections, while safely skipping or limiting unsupported and oversized values.
+
+### 📊 Automatic Metrics
+
+Numeric function outputs are automatically recorded as metrics, making experiment results easy to query and compare.
+
+### 📦 Artifact Capture
+
+Capture supported artifacts such as Matplotlib figures and store them alongside your experiment runs.
+
+### ⏱️ Execution Tracking
+
+Every run records its execution duration, giving you a simple way to understand how long experiments take.
+
+### ❌ Failure Tracking
+
+Failed experiments are recorded with their exception type and message while the original exception is re-raised unchanged.
+
+### 🗄️ Local-First Storage
+
+Runs are stored locally in SQLite by default. No tracking server or external database is required.
+
+### 🔌 Pluggable Storage
+
+Use the built-in `SQLiteStorage` or implement the `StorageBackend` interface to provide your own storage backend.
+
+### 🔎 Query & Compare
+
+Retrieve, filter, compare, and rank experiment runs using `get_runs()`, `filter_runs()`, `compare()`, `top_n()`, and `best_run()`.
+
+### ⚙️ Configurable Capture
+
+Control experiment names, storage, artifact locations, capture limits, and failure behavior through `@track` options.
+
+## How It Works
+
+`maarg` works by wrapping your experiment function with the `@track` decorator. When the function runs, `maarg` observes the execution and automatically captures the information that matters for the run.
+
+### 1. Decorate
+
+Add `@track` to the function you want to track.
+
+```python
+@track
+def train_model(...):
+    ...
+```
+
+### 2. Run
+
+Call your function normally. Your experiment code doesn't need to know that `maarg` is tracking it.
+
+```python
+train_model()
+```
+
+### 3. Capture
+
+During execution, `maarg` captures supported information such as:
+
+* Function inputs
+* Numeric outputs as metrics
+* Artifacts
+* Execution duration
+* Run status
+* Failure details when an experiment fails
+
+### 4. Store
+
+The completed run is stored locally in SQLite by default:
 
 ```text
 .maarg/runs.db
 ```
 
-SQLite uses indexes on:
+You can then retrieve and work with your runs through the `maarg` query API.
 
-- `function`
-- `experiment`
-- `timestamp`
+**Your experiment code stays focused on the experiment. `maarg` handles the tracking.**
 
-This keeps common lookup paths efficient as the local run history grows.
+## Workflow
 
-### Custom database location
+```mermaid
+flowchart TD
 
-```python
-from maarg import SQLiteStorage, track
+    %% =========================
+    %% YOUR CODE
+    %% =========================
+    subgraph USER["Your Code"]
+        A["Experiment Function"]
+        B["@track"]
+        C["Call Function"]
+        
+        A --> B
+        B --> C
+    end
 
-storage = SQLiteStorage("results/experiments.db")
+    %% =========================
+    %% MAARG TRACKING
+    %% =========================
+    subgraph TRACK["maarg Tracking"]
 
-@track(
-    experiment="benchmark",
-    storage=storage,
-    artifacts_dir="results/artifacts",
-)
-def benchmark():
-    return {"score": 0.91}
+        D["Start Run"]
+
+        E["Capture Inputs"]
+        E1["Supported Scalars"]
+        E2["Supported Collections"]
+        E3["Apply Capture Limits"]
+
+        F["Execute Function"]
+
+        G{"Execution Successful?"}
+
+        H["Capture Output"]
+        H1["Numeric Output → Metric"]
+        H2["Other Supported Output → Other"]
+        H3["Unsupported Output → Safe Representation"]
+
+        I["Capture Failure"]
+        I1["Exception Type"]
+        I2["Exception Message"]
+
+        J["Record Execution Duration"]
+
+        K["Build Run"]
+        K1["Inputs"]
+        K2["Metrics"]
+        K3["Artifacts"]
+        K4["Other"]
+        K5["Status"]
+        K6["Duration"]
+        K7["Failure Details"]
+
+        D --> E
+
+        E --> E1
+        E --> E2
+        E --> E3
+        E3 --> F
+
+        F --> G
+
+        G -->|Yes| H
+        G -->|No| I
+
+        H --> H1
+        H --> H2
+        H --> H3
+
+        H1 --> J
+        H2 --> J
+        H3 --> J
+
+        I --> I1
+        I --> I2
+        I1 --> J
+        I2 --> J
+
+        J --> K
+
+    end
+
+    %% =========================
+    %% ARTIFACT CAPTURE
+    %% =========================
+    subgraph ARTIFACTS["Artifact Capture"]
+        L["Supported Artifact"]
+        L1["Matplotlib Figure"]
+        L2["Serializer Registry"]
+        L3["Save Artifact"]
+
+        L --> L1
+        L1 --> L2
+        L2 --> L3
+    end
+
+    %% =========================
+    %% STORAGE
+    %% =========================
+    subgraph STORAGE["Storage"]
+        M["StorageBackend"]
+
+        N[("SQLiteStorage")]
+        O[("Custom StorageBackend")]
+
+        P["Local SQLite Database"]
+        Q["Custom Storage Implementation"]
+
+        N --> P
+        O --> Q
+
+        M --> N
+        M --> O
+    end
+
+    %% =========================
+    %% QUERY API
+    %% =========================
+    subgraph QUERY["Query API"]
+        R["Retrieve Runs"]
+
+        S["get_runs()"]
+        T["filter_runs()"]
+        U["compare()"]
+        V["top_n()"]
+        W["best_run()"]
+
+        R --> S
+        R --> T
+        R --> U
+        R --> V
+        R --> W
+    end
+
+    %% =========================
+    %% ERROR HANDLING
+    %% =========================
+    X["Re-raise Original Exception"]
+
+    %% =========================
+    %% MAIN CONNECTIONS
+    %% =========================
+
+    C --> D
+
+    H --> L
+    L3 --> K3
+
+    K --> M
+    M --> N
+    M --> O
+
+    P --> R
+    Q --> R
+
+    I --> X
 ```
 
-### Custom storage backends
-
-The storage layer is defined by the `StorageBackend` interface. A custom
-backend can implement the persistence and retrieval methods used by maarg:
-
-```python
-from maarg.storage import StorageBackend
-
-class CustomStorage(StorageBackend):
-    def save(self, run):
-        ...
-
-    def get_by_id(self, run_id):
-        ...
-
-    def list_by_function(self, function):
-        ...
-
-    def list_by_experiment(self, experiment):
-        ...
-
-    def list_all(self):
-        ...
-```
-
-SQLite is the built-in backend; remote/distributed backends are not currently
-included.
-
----
-
-## Configuration
-
-`@track` currently accepts:
-
-| Option | Default | Description |
-| --- | --- | --- |
-| `experiment` | Function name | Label used to group related runs |
-| `storage` | Local SQLite | Storage backend instance |
-| `artifacts_dir` | `.maarg/artifacts` | Directory for serialized artifacts |
-| `max_scalar_bytes` | `1000` | Maximum size for a recorded scalar |
-| `max_collection_length` | `20` | Maximum number of items in a recorded collection |
-| `strict` | `False` | Whether successful-run persistence failures raise `MaargTrackingError` |
-
----
-
-## Repository Structure
-
-The current repository is organized as:
+## Project Structure
 
 ```text
 maarg/
 ├── .github/
 │   └── workflows/
 │       └── ci.yaml
+│
 ├── docs/
-│   └── assets/
-│       ├── maarg_logo.svg
-│       └── maarg_logo_dark.svg
+│
 ├── src/
 │   └── maarg/
-│       ├── __init__.py          # Public API exports
-│       ├── _capture.py          # Input filtering and output classification
-│       ├── _convenience.py      # Storage-aware query helpers
-│       ├── _exceptions.py       # Tracking error and warning types
-│       ├── _models.py           # Immutable Run model
-│       ├── _query.py            # Pure query/comparison functions
-│       ├── _tracking.py         # @track implementation
+│       ├── __init__.py
+│       ├── _capture.py
+│       ├── _convenience.py
+│       ├── _exceptions.py
+│       ├── _models.py
+│       ├── _query.py
+│       ├── _tracking.py
 │       └── storage/
-│           ├── __init__.py      # Storage API exports
-│           ├── _base.py         # StorageBackend interface
-│           └── _sqlite.py       # SQLiteStorage implementation
+│           ├── __init__.py
+│           ├── _base.py
+│           └── _sqlite.py
+│
 ├── tests/
 │   ├── test_capture.py
 │   ├── test_convenience.py
@@ -459,104 +349,414 @@ maarg/
 │   ├── test_query.py
 │   ├── test_storage.py
 │   └── test_tracking.py
+│
 ├── CHANGELOG.md
+├── CONTRIBUTING.md
 ├── LICENSE
 ├── PLANNING.md
-├── pyproject.toml
-└── README.md
+├── README.md
+└── pyproject.toml
 ```
 
-The package uses a `src/` layout and supports Python 3.9 through 3.13.
+* `src/maarg/` — Core `maarg` package.
+* `_tracking.py` — Implements the `@track` decorator and run lifecycle.
+* `_capture.py` — Handles input, output, and artifact capture.
+* `_models.py` — Core run data model.
+* `_query.py` — Query, filter, compare, and ranking logic.
+* `_convenience.py` — Storage-aware public query helpers.
+* `_exceptions.py` — `maarg` exceptions and warnings.
+* `storage/` — Storage abstraction and SQLite implementation.
 
----
+The `tests/` directory covers tracking, capture, models, querying, convenience APIs, and storage.
 
-## Development
+## Tracking
 
-Clone the repository and install the development dependencies:
+The `@track` decorator is the core of `maarg`. Add it to an experiment function and `maarg` automatically records the execution as a run.
 
-```bash
-git clone https://github.com/Moazzam-Matin/maarg.git
-cd maarg
-pip install -e ".[dev]"
+### Basic Tracking
+
+The simplest form is:
+
+```python
+from maarg import track
+
+@track
+def train_model(learning_rate=0.01, epochs=10):
+    accuracy = 0.92
+    return accuracy
 ```
 
-Run the test suite:
+Every time `train_model()` runs, `maarg` records a new run.
 
-```bash
-pytest
+### Custom Experiment Names
+
+By default, the experiment name is the function name. You can provide a custom experiment name when needed:
+
+```python
+@track(experiment="model-training")
+def train_model(learning_rate=0.01):
+    return 0.92
 ```
 
-The repository also contains a GitHub Actions CI workflow under
-`.github/workflows/ci.yaml`.
+This allows multiple functions to be grouped under the same experiment.
 
----
+### Tracking Options
 
-## Current Scope
+`@track` supports additional options for controlling how runs are captured and stored:
 
-maarg 0.3.0 focuses on reliable local experiment tracking.
+```python
+@track(
+    experiment="model-training",
+    storage=storage,
+    artifacts_dir="artifacts",
+    max_scalar_bytes=1000,
+    max_collection_length=20,
+    strict=False,
+)
+def train_model(learning_rate=0.01, epochs=10):
+    return 0.92
+```
 
-### Included
+| Option                  | Description                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| `experiment`            | Name used to group related runs. Defaults to the function name.                  |
+| `storage`               | Storage backend used to persist the run.                                         |
+| `artifacts_dir`         | Directory used for captured artifacts.                                           |
+| `max_scalar_bytes`      | Maximum size for captured scalar values.                                         |
+| `max_collection_length` | Maximum number of elements captured from supported collections.                  |
+| `strict`                | Controls whether successful-run persistence failures raise `MaargTrackingError`. |
 
-- zero-instrumentation `@track` decorator
-- automatic input filtering
-- automatic metric/output classification
-- Matplotlib artifact capture
-- local SQLite persistence
-- pluggable storage interface
-- Python query and comparison API
-- failure tracking
-- failure-safe persistence behavior
-- `strict` mode for successful-run persistence
-- tracking error and warning types
-- artifact filename sanitization
-- SQLite indexes for common lookup fields
-- internal serializer registry
+### What Gets Recorded
 
-### Not currently included
+For each tracked execution, `maarg` can record:
 
-- command-line interface
-- web dashboard
-- distributed or multi-machine tracking server
-- experiment orchestration
-- authentication or permissions
-- model registry
-- remote storage backends
-- step-wise/imperative metric logging
-- free-form run tags
+* Function inputs
+* Numeric outputs as metrics
+* Other supported outputs
+* Artifacts
+* Execution duration
+* Run status
+* Exception type and message for failed runs
 
----
+The function itself remains unchanged from the user's perspective: call it normally, receive its normal return value, and handle exceptions as usual.
+
+## Querying
+
+Once your experiments have been tracked, `maarg` provides a simple query API for retrieving, filtering, comparing, and ranking runs.
+
+### Retrieve Runs
+
+Use `get_runs()` to retrieve tracked runs. You can query all runs or narrow the results by function or experiment.
+
+```python
+from maarg import get_runs
+
+runs = get_runs()
+
+training_runs = get_runs(function="train_model")
+
+experiment_runs = get_runs(experiment="model-training")
+```
+
+### Filter Runs
+
+Use `filter_runs()` to find runs matching specific inputs or conditions.
+
+```python
+from maarg import filter_runs
+
+runs = filter_runs(
+    function="train_model",
+    learning_rate=0.01,
+    epochs=10,
+)
+```
+
+### Compare Runs
+
+Use `compare()` to create a side-by-side view of selected runs.
+
+```python
+from maarg import compare
+
+comparison = compare(runs)
+
+print(comparison)
+```
+
+### Rank Runs
+
+Use `top_n()` to find the highest- or lowest-performing runs for a metric.
+
+```python
+from maarg import top_n
+
+top_runs = top_n(
+    runs=runs,
+    metric="accuracy",
+    n=5,
+    higher_is_better=True,
+)
+```
+
+By default, failed runs are excluded from ranking.
+
+### Find the Best Run
+
+Use `best_run()` when you only need the single best run for a metric.
+
+```python
+from maarg import best_run
+
+best = best_run(
+    runs=runs,
+    metric="accuracy",
+    higher_is_better=True,
+)
+```
+
+### Query API at a Glance
+
+| Function        | Purpose                              |
+| --------------- | ------------------------------------ |
+| `get_runs()`    | Retrieve tracked runs                |
+| `filter_runs()` | Filter runs by inputs and metadata   |
+| `compare()`     | Compare selected runs                |
+| `top_n()`       | Rank runs and return the top results |
+| `best_run()`    | Return the best run for a metric     |
+
+The query API works with both stored runs and in-memory `Run` objects, making it possible to use the same query logic whether runs come directly from storage or from a previous query.
+
+## Storage
+
+`maarg` uses a local-first storage model. By default, tracked runs are stored in a SQLite database inside the `.maarg` directory:
+
+```text
+.maarg/
+└── runs.db
+```
+
+No tracking server or external database is required for the default setup.
+
+### SQLite Storage
+
+The built-in `SQLiteStorage` backend provides persistent local storage for experiment runs.
+
+```python
+from maarg import SQLiteStorage, track
+
+storage = SQLiteStorage()
+
+@track(storage=storage)
+def train_model(learning_rate=0.01):
+    return 0.92
+```
+
+You can also provide a custom database path:
+
+```python
+storage = SQLiteStorage("experiments.db")
+```
+
+### Custom Storage Backends
+
+`maarg` separates tracking logic from persistence through the `StorageBackend` interface.
+
+This allows you to implement your own storage backend without changing how experiments are tracked.
+
+```python
+from maarg import StorageBackend, track
+
+class MyStorage(StorageBackend):
+    # Implement the required storage methods
+    ...
+
+storage = MyStorage()
+
+@track(storage=storage)
+def train_model():
+    return 0.92
+```
+
+The tracking layer remains the same regardless of which storage backend is used.
+
+### Storage Architecture
+
+```text
+@track
+   │
+   ├──────────────► Run Metadata
+   │                    │
+   │                    ▼
+   │              StorageBackend
+   │                    ├── SQLiteStorage
+   │                    │      └── .maarg/runs.db
+   │                    │
+   │                    └── Custom StorageBackend
+   │
+   └──────────────► Artifacts
+                        │
+                        ▼
+                   Artifacts Storage
+                        └── .maarg/artifacts/
+                               └── <run_id>/
+                                      └── *.png
+```
+
+Run metadata and artifacts are stored separately: SQLite stores the run information, while captured artifacts are saved in the artifact directory associated with each run.
+
+## Capture & Failure Handling
+
+`maarg` is designed to capture useful experiment information without interrupting the experiment itself.
+
+### Input Capture
+
+`maarg` automatically captures supported function inputs, including:
+
+* Integers, floats, booleans, strings, and `None`
+* Lists and tuples
+* Dictionaries
+* Nested supported collections
+
+To keep stored run data manageable, capture limits are applied to scalar values and collections. Unsupported or complex objects are safely skipped rather than serialized indiscriminately.
+
+### Output Capture
+
+Function outputs are recorded according to their type:
+
+| Output             | Recorded As                   |
+| ------------------ | ----------------------------- |
+| `int` / `float`    | Metric                        |
+| `bool`             | Other                         |
+| `str` / `None`     | Other                         |
+| Supported artifact | Artifact                      |
+| Unsupported object | Safe truncated representation |
+
+Numeric outputs are automatically available as metrics for querying and ranking.
+
+### Artifact Capture
+
+`maarg` supports artifact serializers for objects that can be persisted separately from run metadata.
+
+Currently, Matplotlib figures can be captured as PNG artifacts when the optional plotting dependencies are installed.
+
+Artifacts are stored separately from the SQLite run metadata:
+
+```text
+.maarg/
+├── runs.db
+└── artifacts/
+    └── <run_id>/
+        └── *.png
+```
+
+### Failure Handling
+
+If a tracked function raises an exception, `maarg` records the failed run when possible, including:
+
+* Run status
+* Exception type
+* Exception message
+* Execution duration
+* Captured inputs
+
+The original exception is then re-raised unchanged, so adding tracking does not alter normal application error handling.
+
+If persistence of a failed run itself fails, `maarg` emits a `MaargTrackingWarning` and preserves the original exception.
+
+### Strict Mode
+
+By default, `maarg` treats tracking persistence as secondary to your experiment. If a successful run cannot be saved, `maarg` emits a `MaargTrackingWarning` and returns the original function result.
+
+Use `strict=True` when tracking persistence is required:
+
+```python
+@track(strict=True)
+def train_model():
+    return 0.92
+```
+
+With strict mode enabled, a failure to persist a **successful run** raises `MaargTrackingError` instead of returning the original result.
+
+For failed experiments, the original exception is always preserved and re-raised. If recording the failed run also fails, `maarg` emits a `MaargTrackingWarning` rather than replacing the original exception.
+
+In short:
+
+| Mode           | Successful run cannot be saved | Failed run cannot be saved            |
+| -------------- | ------------------------------ | ------------------------------------- |
+| `strict=False` | Warning + return result        | Warning + re-raise original exception |
+| `strict=True`  | `MaargTrackingError`           | Warning + re-raise original exception |
+
+## Scope
+
+`maarg` is intentionally focused on lightweight, local experiment tracking.
+
+### What `maarg` Does
+
+The current release focuses on:
+
+* Zero-boilerplate function tracking
+* Automatic input and output capture
+* Automatic metric capture
+* Artifact capture
+* Execution timing
+* Failure tracking
+* Local SQLite storage
+* Pluggable storage backends
+* Querying, filtering, comparing, and ranking runs
+
+### What `maarg` Does Not Try to Be
+
+`maarg` does not currently provide:
+
+* A tracking server
+* A web dashboard
+* Distributed or multi-machine experiment tracking
+* Authentication or permissions
+* A model registry
+* Remote storage backends
+* Step-wise or imperative metric logging
+* Free-form experiment tags
+* Workflow orchestration
+
+The goal is to keep the core library small, understandable, and useful without requiring infrastructure around it.
 
 ## Roadmap
 
-The roadmap is intentionally small and follows the project's planning document.
+`maarg` is intentionally evolving around the needs of lightweight experiment tracking.
 
-- **CLI:** possible future addition if real user demand emerges
-- **Capture hooks/callbacks:** future support for integrations such as webhooks
-  or notifications
-- **Additional storage backends:** future remote or alternative persistence
-- **Dashboard:** planned as a separate package rather than part of core maarg
-- **Run tags:** a future first-class run metadata feature
-- **Step-wise logging:** requires a separate design before implementation
+Potential future areas include:
 
-See [PLANNING.md](PLANNING.md) for the current project decisions and
-non-goals.
+* Additional storage backends
+* Capture hooks and callbacks
+* More artifact serializers
+* A CLI for common tracking and querying workflows
+* Experiment tags and metadata
+* Further improvements to querying and comparison
+* A separate dashboard or visualization layer
 
----
+The roadmap is driven by practical use cases and feedback rather than by adding infrastructure for its own sake.
 
-## Version
+If you have an idea, use case, or limitation you'd like to discuss, contributions and feedback are welcome.
 
-The current package version is **0.3.0**.
+## Contributing
 
-See [CHANGELOG.md](CHANGELOG.md) for release history.
+Contributions to `maarg` are welcome.
 
----
+Before opening a pull request, please:
 
-## About the Name
+1. Read `CONTRIBUTING.md` for development and contribution guidelines.
+2. Create a focused change that addresses one problem or improvement.
+3. Add or update tests for behavioral changes.
+4. Run the test suite locally.
+5. Keep public APIs and documentation consistent with the implementation.
 
-*maarg* (मार्ग) is Hindi for "path" or "route".
+For larger changes, opening an issue or discussing the proposed approach first can help avoid unnecessary work.
 
----
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the complete contribution workflow.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+`maarg` is licensed under the Apache License 2.0.
+
+See [`LICENSE`](LICENSE) for the full license text.
