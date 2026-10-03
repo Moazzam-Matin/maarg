@@ -64,9 +64,9 @@ The core API is Python-first and local-first.
               │
               ▼
   ┌────────────────────────┐
-  │ Classify return value   │
-  │ metrics / artifacts /   │
-  │ other                   │
+  │ Classify return value  │
+  │ metrics / artifacts /  │
+  │ other                  │
   └───────────┬────────────┘
               │
               ▼
