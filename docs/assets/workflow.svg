@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="2210" viewBox="0 0 1440 2210" role="img" aria-labelledby="title description">
+  <title id="title">maarg experiment tracking workflow</title>
+  <desc id="description">A diagram showing an experiment wrapped by the track decorator, input and output capture, artifact serialization, local or custom storage, and querying tracked runs. Failures are recorded and the original exception is re-raised.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#596579"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#16866f"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#bd5960"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #263247; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #667085; }
+      .group-title { font-size: 21px; font-weight: 700; letter-spacing: .2px; }
+      .node-title { font-size: 19px; font-weight: 650; }
+      .node-copy { font-size: 16px; fill: #536176; }
+      .small { font-size: 15px; fill: #536176; }
+      .group { fill: #fbfcfe; stroke-width: 2; rx: 24; }
+      .box { stroke-width: 2; rx: 16; }
+      .line { fill: none; stroke: #596579; stroke-width: 3; marker-end: url(#arrow); }
+      .line-green { fill: none; stroke: #16866f; stroke-width: 3; marker-end: url(#arrow-green); }
+      .line-red { fill: none; stroke: #bd5960; stroke-width: 3; marker-end: url(#arrow-red); }
+      .line-dash { fill: none; stroke: #bd5960; stroke-width: 2.5; stroke-dasharray: 8 7; marker-end: url(#arrow-red); }
+      .label { font-size: 15px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="2210" fill="#f4f7fb"/>
+  <text x="720" y="62" text-anchor="middle" class="title">How maarg tracks an experiment</text>
+  <text x="720" y="96" text-anchor="middle" class="subtitle">From a normal function call to a queryable local run</text>
+
+  <!-- User code -->
+  <rect x="50" y="125" width="1340" height="185" class="group" stroke="#7282db"/>
+  <text x="82" y="162" class="group-title" fill="#4b5cc4">Your Code</text>
+  <rect x="120" y="190" width="300" height="82" class="box" fill="#eef0ff" stroke="#7282db"/>
+  <text x="270" y="224" text-anchor="middle" class="node-title">Experiment Function</text>
+  <text x="270" y="250" text-anchor="middle" class="node-copy">Your existing Python code</text>
+  <rect x="570" y="190" width="300" height="82" class="box" fill="#eef0ff" stroke="#7282db"/>
+  <text x="720" y="224" text-anchor="middle" class="node-title">@track</text>
+  <text x="720" y="250" text-anchor="middle" class="node-copy">Wrap the function</text>
+  <rect x="1020" y="190" width="300" height="82" class="box" fill="#eef0ff" stroke="#7282db"/>
+  <text x="1170" y="224" text-anchor="middle" class="node-title">Call Function</text>
+  <text x="1170" y="250" text-anchor="middle" class="node-copy">Call it as usual</text>
+  <path d="M420 231 H560" class="line"/>
+  <path d="M870 231 H1010" class="line"/>
+
+  <!-- Tracking -->
+  <rect x="50" y="345" width="1340" height="950" class="group" stroke="#5c80bc"/>
+  <text x="82" y="384" class="group-title" fill="#42699f">maarg Tracking</text>
+  <rect x="125" y="420" width="260" height="78" class="box" fill="#eaf2ff" stroke="#5c80bc"/>
+  <text x="255" y="467" text-anchor="middle" class="node-title">Start Run</text>
+  <rect x="505" y="420" width="320" height="78" class="box" fill="#eaf2ff" stroke="#5c80bc"/>
+  <text x="665" y="467" text-anchor="middle" class="node-title">Capture Inputs</text>
+  <rect x="445" y="540" width="190" height="72" class="box" fill="#f6f9ff" stroke="#9bb1d4"/>
+  <text x="540" y="571" text-anchor="middle" class="node-copy">Supported</text>
+  <text x="540" y="594" text-anchor="middle" class="node-copy">scalars</text>
+  <rect x="660" y="540" width="190" height="72" class="box" fill="#f6f9ff" stroke="#9bb1d4"/>
+  <text x="755" y="571" text-anchor="middle" class="node-copy">Supported</text>
+  <text x="755" y="594" text-anchor="middle" class="node-copy">collections</text>
+  <rect x="875" y="540" width="245" height="72" class="box" fill="#f6f9ff" stroke="#9bb1d4"/>
+  <text x="997" y="582" text-anchor="middle" class="node-copy">Apply Capture Limits</text>
+  <rect x="520" y="660" width="300" height="78" class="box" fill="#eaf2ff" stroke="#5c80bc"/>
+  <text x="670" y="707" text-anchor="middle" class="node-title">Execute Function</text>
+  <path d="M1170 272 V360 H255 V410" class="line"/>
+  <path d="M385 459 H495" class="line"/>
+  <path d="M665 498 V530" class="line"/>
+  <path d="M540 612 V635 H670 V650" class="line"/>
+  <path d="M755 612 V635 H670" class="line"/>
+  <path d="M997 612 V635 H670" class="line"/>
+
+  <path d="M670 738 V770 H315 V790" class="line"/>
+  <polygon points="940,780 1030,840 940,900 850,840" fill="#fff8e9" stroke="#d9a441" stroke-width="2.5"/>
+  <text x="940" y="834" text-anchor="middle" class="node-copy">Execution</text>
+  <text x="940" y="857" text-anchor="middle" class="node-copy">Successful?</text>
+  <path d="M820 699 H940 V770" class="line"/>
+
+  <text x="788" y="814" class="label" fill="#16866f">Yes</text>
+  <path d="M850 840 H700 V880 H540 V900" class="line-green"/>
+  <rect x="380" y="900" width="320" height="76" class="box" fill="#e9f7f2" stroke="#16866f"/>
+  <text x="540" y="947" text-anchor="middle" class="node-title">Capture Output</text>
+  <rect x="100" y="1010" width="260" height="86" class="box" fill="#f3fbf8" stroke="#83bfae"/>
+  <text x="230" y="1045" text-anchor="middle" class="node-copy">Numeric Output</text>
+  <text x="230" y="1070" text-anchor="middle" class="small">→ Metric</text>
+  <rect x="410" y="1010" width="260" height="86" class="box" fill="#f3fbf8" stroke="#83bfae"/>
+  <text x="540" y="1045" text-anchor="middle" class="node-copy">Other Supported</text>
+  <text x="540" y="1070" text-anchor="middle" class="small">Output → Other</text>
+  <rect x="720" y="1010" width="260" height="86" class="box" fill="#f3fbf8" stroke="#83bfae"/>
+  <text x="850" y="1045" text-anchor="middle" class="node-copy">Unsupported Output</text>
+  <text x="850" y="1070" text-anchor="middle" class="small">→ Safe Representation</text>
+  <path d="M540 976 V995 H230 V1000" class="line-green"/>
+  <path d="M540 976 V1000" class="line-green"/>
+  <path d="M540 976 V995 H850 V1000" class="line-green"/>
+
+  <text x="1060" y="814" class="label" fill="#bd5960">No</text>
+  <path d="M1030 840 H1145 V900" class="line-red"/>
+  <rect x="985" y="900" width="300" height="76" class="box" fill="#fff0f0" stroke="#bd5960"/>
+  <text x="1135" y="947" text-anchor="middle" class="node-title">Capture Failure</text>
+  <rect x="990" y="1010" width="135" height="76" class="box" fill="#fff8f8" stroke="#d89a9e"/>
+  <text x="1057" y="1042" text-anchor="middle" class="small">Exception</text>
+  <text x="1057" y="1065" text-anchor="middle" class="small">Type</text>
+  <rect x="1140" y="1010" width="145" height="76" class="box" fill="#fff8f8" stroke="#d89a9e"/>
+  <text x="1212" y="1042" text-anchor="middle" class="small">Exception</text>
+  <text x="1212" y="1065" text-anchor="middle" class="small">Message</text>
+  <path d="M1135 976 V995 H1057 V1000" class="line-red"/>
+  <path d="M1135 976 V995 H1212 V1000" class="line-red"/>
+  <rect x="1030" y="1120" width="250" height="66" class="box" fill="#fff0f0" stroke="#bd5960"/>
+  <text x="1155" y="1160" text-anchor="middle" class="node-copy">Re-raise Original Exception</text>
+  <path d="M1135 976 V1110" class="line-dash"/>
+
+  <rect x="390" y="1150" width="360" height="74" class="box" fill="#edf3ff" stroke="#5c80bc"/>
+  <text x="570" y="1195" text-anchor="middle" class="node-title">Record Execution Duration</text>
+  <path d="M230 1096 V1130 H500 V1140" class="line-green"/>
+  <path d="M540 1096 V1140" class="line-green"/>
+  <path d="M850 1096 V1130 H650 V1140" class="line-green"/>
+  <path d="M1057 1086 V1128 H700 V1140" class="line-red"/>
+  <path d="M1212 1086 V1128 H700" class="line-red"/>
+  <rect x="835" y="1180" width="430" height="82" class="box" fill="#eaf2ff" stroke="#5c80bc"/>
+  <text x="1050" y="1214" text-anchor="middle" class="node-title">Build Run</text>
+  <text x="1050" y="1241" text-anchor="middle" class="small">Inputs · Metrics · Artifacts · Other · Status · Duration · Failure Details</text>
+  <path d="M750 1187 H825" class="line"/>
+
+  <!-- Artifact capture -->
+  <rect x="50" y="1330" width="1340" height="255" class="group" stroke="#d2a44d"/>
+  <text x="82" y="1368" class="group-title" fill="#a5761c">Artifact Capture</text>
+  <rect x="100" y="1410" width="250" height="90" class="box" fill="#fff7e8" stroke="#d2a44d"/>
+  <text x="225" y="1447" text-anchor="middle" class="node-copy">Supported Artifact</text>
+  <text x="225" y="1474" text-anchor="middle" class="small">Matplotlib Figure</text>
+  <rect x="455" y="1410" width="250" height="90" class="box" fill="#fff7e8" stroke="#d2a44d"/>
+  <text x="580" y="1447" text-anchor="middle" class="node-copy">Serializer Registry</text>
+  <text x="580" y="1474" text-anchor="middle" class="small">Select a serializer</text>
+  <rect x="810" y="1410" width="250" height="90" class="box" fill="#fff7e8" stroke="#d2a44d"/>
+  <text x="935" y="1447" text-anchor="middle" class="node-copy">Save Artifact</text>
+  <text x="935" y="1474" text-anchor="middle" class="small">Store captured file</text>
+  <path d="M350 1455 H445" class="line"/>
+  <path d="M705 1455 H800" class="line"/>
+  <path d="M935 1410 V1290 H1050 V1272" class="line"/>
+
+  <!-- Storage -->
+  <rect x="50" y="1620" width="1340" height="315" class="group" stroke="#3f9a91"/>
+  <text x="82" y="1658" class="group-title" fill="#277c75">Storage</text>
+  <rect x="570" y="1685" width="300" height="70" class="box" fill="#e8f7f5" stroke="#3f9a91"/>
+  <text x="720" y="1729" text-anchor="middle" class="node-title">StorageBackend</text>
+  <rect x="250" y="1795" width="340" height="72" class="box" fill="#effaf8" stroke="#75b9b2"/>
+  <text x="420" y="1826" text-anchor="middle" class="node-copy">SQLiteStorage</text>
+  <text x="420" y="1850" text-anchor="middle" class="small">Local SQLite Database</text>
+  <rect x="850" y="1795" width="340" height="72" class="box" fill="#effaf8" stroke="#75b9b2"/>
+  <text x="1020" y="1826" text-anchor="middle" class="node-copy">Custom StorageBackend</text>
+  <text x="1020" y="1850" text-anchor="middle" class="small">Custom Storage Implementation</text>
+  <path d="M1050 1262 V1600 H720 V1675" class="line"/>
+  <path d="M720 1755 V1775 H420 V1785" class="line"/>
+  <path d="M720 1755 V1775 H1020 V1785" class="line"/>
+
+  <!-- Query API -->
+  <rect x="50" y="1970" width="1340" height="190" class="group" stroke="#7282db"/>
+  <text x="82" y="2008" class="group-title" fill="#4b5cc4">Query API</text>
+  <rect x="535" y="2025" width="370" height="82" class="box" fill="#eef0ff" stroke="#7282db"/>
+  <text x="720" y="2058" text-anchor="middle" class="node-title">Retrieve Runs</text>
+  <text x="720" y="2085" text-anchor="middle" class="node-copy">get_runs() · filter_runs() · compare()</text>
+  <text x="720" y="2108" text-anchor="middle" class="small">top_n() · best_run()</text>
+  <path d="M420 1867 V1910 H720 V2015" class="line"/>
+  <path d="M1020 1867 V1910 H720" class="line"/>
+  <text x="720" y="2185" text-anchor="middle" class="subtitle">Runs stay local by default; custom storage can implement the same backend interface.</text>
+</svg>
