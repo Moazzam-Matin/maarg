@@ -2,6 +2,15 @@
 
 All notable changes to maarg are documented here.
 
+## [0.3.1] — 2026-10-04
+
+### Changed
+
+- Updated project metadata and release documentation for the 0.3.1 release.
+- Migrated the project license from MIT to Apache License 2.0.
+- Updated project documentation, branding, and planning materials.
+- Refined package metadata and PyPI-facing project information.
+
 ## [0.3.0] — 2026-10-03
 
 ### Added
