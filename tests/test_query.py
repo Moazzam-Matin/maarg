@@ -169,3 +169,24 @@ def test_compare_correctly_labels_success_and_failure_status():
     result = compare([good, bad])
 
     assert result["status"] == ["success", "failed"]
+
+def test_top_n_with_ties():
+    r1 = make_run(metrics={"accuracy": 0.9, "id": 1})
+    r2 = make_run(metrics={"accuracy": 0.9, "id": 2})
+    result = top_n([r1, r2], metric="accuracy", n=1)
+    assert len(result) == 1
+    assert result[0] in [r1, r2]
+
+def test_top_n_n_greater_than_length():
+    r1 = make_run(metrics={"accuracy": 0.9})
+    result = top_n([r1], metric="accuracy", n=10)
+    assert len(result) == 1
+
+def test_filter_runs_empty_list():
+    assert filter_runs([], experiment="exp") == []
+
+def test_filter_runs_multiple_inputs():
+    r1 = make_run(inputs={"a": 1, "b": 2})
+    r2 = make_run(inputs={"a": 1, "b": 3})
+    result = filter_runs([r1, r2], a=1, b=2)
+    assert result == [r1]
