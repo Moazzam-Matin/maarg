@@ -158,3 +158,22 @@ def test_track_experiment_defaults_to_function_name_not_shared_across_functions(
 
     assert storage.list_by_experiment("func_a")[0].function == "func_a"
     assert storage.list_by_experiment("func_b")[0].function == "func_b"
+
+def test_track_save_failure_strict_false_preserves_original_exception():
+    @track(storage=FailingStorage(), strict=False)
+    def compute():
+        raise ValueError("original error")
+
+    with pytest.warns(MaargTrackingWarning, match="Failed to save tracking data"), \
+         pytest.raises(ValueError, match="original error"):
+        compute()
+
+def test_track_returns_non_dict_scalar(storage):
+    @track(storage=storage)
+    def compute_scalar():
+        return 42
+
+    result = compute_scalar()
+    assert result == 42
+    runs = storage.list_by_function("compute_scalar")
+    assert runs[0].metrics == {"result": 42}

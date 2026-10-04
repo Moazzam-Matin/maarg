@@ -169,3 +169,19 @@ def test_list_by_function_is_also_ordered_newest_first(storage):
 
     assert results[0].run_id == r2.run_id
     assert results[1].run_id == r1.run_id
+
+def test_save_empty_metrics_and_inputs(storage):
+    run = make_run(inputs={}, metrics={})
+    storage.save(run)
+    retrieved = storage.get_by_id(run.run_id)
+    assert retrieved.inputs == {}
+    assert retrieved.metrics == {}
+
+def test_save_unicode_chars(storage):
+    run = make_run(inputs={"text": "😊"}, metrics={"loss": 0.1})
+    storage.save(run)
+    retrieved = storage.get_by_id(run.run_id)
+    assert retrieved.inputs["text"] == "😊"
+
+def test_get_by_id_weird_chars(storage):
+    assert storage.get_by_id("id-with-'quotes'-and-\\-") is None
