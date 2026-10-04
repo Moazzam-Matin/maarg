@@ -8,20 +8,14 @@
   <strong>Track Experiments with Zero Boilerplate.</strong>
 </p>
 
-<p align="center">
-  <a href="https://pypi.org/project/maarg/">
-    <img src="https://img.shields.io/pypi/v/maarg.svg" alt="PyPI">
-  </a>
-  <a href="https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml">
-    <img src="https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml/badge.svg" alt="CI">
-  </a>
-  <a href="https://pypi.org/project/maarg/">
-    <img src="https://img.shields.io/pypi/pyversions/maarg.svg" alt="Python">
-  </a>
-  <a href="https://github.com/Moazzam-Matin/maarg/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0">
-  </a>
-</p>
+<div align="center">
+
+[![PyPI](https://img.shields.io/pypi/v/maarg.svg)](https://pypi.org/project/maarg/)
+[![CI](https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/maarg/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/Moazzam-Matin/maarg/blob/main/LICENSE)
+
+</div>
 
 ## What is maarg?
 
