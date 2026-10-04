@@ -2,13 +2,14 @@
 
 ## Vision
 
-A decorator that auto-captures a function's inputs and outputs via introspection
-(signature + return value) and logs them — no `log_param()`, no `log_metric()`,
-no boilerplate. Every existing experiment tracker (MLflow, W&B, Neptune, Comet,
-Aim, Sacred) still requires you to write explicit logging calls, or at best
-offers framework-specific autologging hooks. maarg's core differentiator is
-that it introspects the function itself, so it works on any Python function,
-not just ones using a supported training framework.
+A decorator that automatically captures a function's inputs, outputs, execution
+time, and failures and records them as structured experiment runs — no
+`log_param()`, no `log_metric()`, no boilerplate.
+
+maarg is designed around zero-instrumentation tracking: users write normal
+Python functions and add `@track`. The library handles capture, classification,
+persistence, and failure tracking automatically, while remaining lightweight,
+local-first, and independent of any specific ML framework.
 
 ## Who it's for
 
@@ -21,22 +22,26 @@ not just ones using a supported training framework.
    infrastructure (not a v1 design target, but shouldn't be architecturally
    blocked later)
 
-## v1 Scope — SHIPPED (0.2.0, patched to 0.2.0.post1)
+## v1 Scope — SHIPPED (0.3.1)
 
 - `@track` decorator, zero-config by default, bare and parenthesized usage
 - Automatic input filtering: log small/simple values, skip large/complex objects
   (detection based on actual type/size, not name-guessing)
-- Automatic output handling: numbers, dicts of numbers, matplotlib figures,
-  graceful fallback for unknown types
+- Automatic output handling: metrics, simple values, structured collections,
+  registered artifact types, and graceful fallback for unknown types
+- Execution timing: capture duration for every tracked run
 - Failure tracking: a raised exception is recorded (status, error type/message)
   and re-raised unchanged
+- Failure-safe persistence: tracking failures do not mask the user's original
+  exception; strict mode is available for successful-run persistence failures
+- Artifact name sanitization for safe artifact paths
+- Serializer registry for extensible artifact capture
+- SQLite indexes on commonly queried fields
 - Storage backend interface: local-first default (SQLite), pluggable for
   future backends
 - Python query API: `get_runs`, `top_n`, `best_run`, `filter_runs`, `compare` —
   storage-aware convenience wrappers plus a pure, storage-independent core
-- Package is public on PyPI and GitHub; validated via a TestPyPI dry run and
-  real-world dogfooding on a second project (recommendation-engine), which
-  surfaced and fixed real bugs before and after launch
+- Package is public on PyPI and GitHub
 
 ### Deliberately not in v1
 
@@ -73,7 +78,7 @@ not just ones using a supported training framework.
 
 ## License
 
-MIT
+Apache License 2.0
 
 ## Open decisions
 
@@ -97,17 +102,17 @@ MIT
 - **Phase 3:** Query API — **done** (CLI deliberately deferred, see above)
 - **Phase 4:** README, logo, CI badges, public GitHub repo, PyPI release —
   **done**
-- **0.3.0 — Robust Capture (current focus):** see below
+- **0.3.0 — Robust Capture:** **done** — see below
+- **0.3.1:** **current release** — packaging, documentation, branding, and
+  release-readiness improvements
 - **0.4.0 (tentative):** CLI, if real user demand emerges
 - **Later / post-v1:** Dashboard as a separate package, additional storage
   backends, free-form tags, the step-wise logging design question
 
-## 0.3.0 — Robust Capture
+## 0.3.0 — Robust Capture — SHIPPED
 
-Theme: the core abstraction is right; this release hardens it so it can be
-trusted with real experiments, rather than adding new surface area. Triggered
-by a combination of real dogfooding (recommendation-engine) and an external
-technical audit of the 0.2.0 codebase.
+Theme: the core abstraction was right; this release hardened it so it can be
+trusted with real experiments, rather than adding unnecessary surface area.
 
 **Objectives:**
 
@@ -150,4 +155,4 @@ technical audit of the 0.2.0 codebase.
 - The CLI
 - The step-wise/imperative logging design question
 
-Last Updated: 2026-10-03
+Last Updated: 2026-10-04
