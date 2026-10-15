@@ -1,5 +1,6 @@
 """Tests for input-filtering logic (is_loggable / filter_inputs)."""
 
+import math
 from pathlib import Path
 
 import matplotlib
@@ -255,3 +256,20 @@ def test_registered_serializer_handles_custom_type(tmp_path):
     assert artifacts[0]["name"] == "result"
     assert artifacts[0]["type"] == "custom"
     assert Path(artifacts[0]["path"]).exists()
+
+def test_bytes_is_not_loggable():
+    assert not is_loggable(b"x" * 50)
+
+def test_nested_empty_collections_are_loggable():
+    assert is_loggable([{}])
+    assert is_loggable({"a": []})
+
+def test_split_output_with_nan_and_inf():
+    metrics, _artifacts, _other = split_output({"inf": float("inf"), "nan": float("nan")}, artifacts_dir="unused")
+    assert math.isinf(metrics["inf"])
+    assert math.isnan(metrics["nan"])
+
+def test_split_output_with_exception_object():
+    err = ValueError("test")
+    _metrics, _artifacts, other = split_output(err, artifacts_dir="unused")
+    assert "ValueError" in other["result"]
