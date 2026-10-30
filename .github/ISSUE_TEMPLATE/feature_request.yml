@@ -1,0 +1,44 @@
+name: Feature Request
+description: Suggest an improvement or new capability for maarg.
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please explain the problem you're trying to solve and how your idea could help maarg users.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What problem or limitation are you experiencing?
+      placeholder: Describe the problem this feature would solve...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution
+      description: Describe the feature or improvement you'd like to see.
+      placeholder: Explain your proposed solution...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: Describe any alternatives or workarounds...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add examples, code snippets, or other context that might help.
+    validations:
+      required: false

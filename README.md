@@ -10,6 +10,7 @@
 
 <div align="center">
 
+[![PyPI Downloads](https://img.shields.io/pypi/dm/maarg?label=PyPI%20downloads&color=blue)](https://pypi.org/project/maarg/)
 [![PyPI](https://img.shields.io/pypi/v/maarg.svg)](https://pypi.org/project/maarg/)
 [![CI](https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/maarg/)
