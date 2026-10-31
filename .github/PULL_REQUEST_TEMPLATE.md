@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../docs/assets/maarg_icon.svg" alt="maarg logo" width="140">
+</p>
+
 ## Summary
 
 <!-- Briefly describe what this pull request changes. -->
