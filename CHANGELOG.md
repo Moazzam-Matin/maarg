@@ -2,6 +2,21 @@
 
 All notable changes to maarg are documented here.
 
+## [0.4.0] — 2026-11-11
+
+### Added
+
+- Structured dictionary output capture in `run.metrics`, preserving
+  JSON-compatible nested dictionaries and lists.
+- Support for preserving numeric values, booleans, strings, and `None`
+  within structured dictionary outputs.
+
+### Changed
+
+- `top_n()` and `best_run()` continue to rank scalar numeric metrics.
+- Boolean values are excluded from numeric metric ranking.
+- Updated output capture documentation and regression tests.
+
 ## [0.3.1] — 2026-10-04
 
 ### Changed
