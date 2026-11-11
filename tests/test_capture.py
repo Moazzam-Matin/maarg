@@ -123,19 +123,20 @@ def test_numeric_values_go_to_metrics():
 
 def test_bool_goes_to_other_not_metrics():
     metrics, _artifacts, other = split_output({"converged": True}, artifacts_dir="unused")
-    assert metrics == {}
-    assert other == {"converged": True}
+    assert metrics == {"converged": True}
+    assert other == {}
 
 
 def test_string_goes_to_other():
     metrics, _artifacts, other = split_output({"status": "converged"}, artifacts_dir="unused")
-    assert other == {"status": "converged"}
-    assert metrics == {}
+    assert metrics == {"status": "converged"}
+    assert other == {}
 
 
 def test_none_goes_to_other():
-    _metrics, _artifacts, other = split_output({"checkpoint": None}, artifacts_dir="unused")
-    assert other == {"checkpoint": None}
+    metrics, _artifacts, other = split_output({"checkpoint": None}, artifacts_dir="unused")
+    assert metrics == {"checkpoint": None}
+    assert other == {}
 
 
 def test_mixed_dict_splits_correctly_by_key():
@@ -146,9 +147,9 @@ def test_mixed_dict_splits_correctly_by_key():
     }
     metrics, artifacts, other = split_output(output, artifacts_dir="unused")
 
-    assert metrics == {"accuracy": 0.95}
-    assert other == {"converged": True, "status": "early stopping"}
+    assert metrics == output
     assert artifacts == []
+    assert other == {}
 
 
 def test_non_dict_scalar_wraps_in_result_key():
@@ -273,3 +274,24 @@ def test_split_output_with_exception_object():
     err = ValueError("test")
     _metrics, _artifacts, other = split_output(err, artifacts_dir="unused")
     assert "ValueError" in other["result"]
+
+def test_split_output_preserves_nested_dictionary_structure(tmp_path):
+    output = {
+        "metrics": {
+            "precision": 0.91,
+            "recall": 0.84,
+        },
+        "population": {
+            "users": 1000,
+        },
+        "diagnostics": {
+            "status": "complete",
+            "duration": 12.5,
+        },
+    }
+
+    metrics, artifacts, other = split_output(output, tmp_path)
+
+    assert metrics == output
+    assert other == {}
+    assert artifacts == []

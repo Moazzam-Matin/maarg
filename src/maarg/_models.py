@@ -20,7 +20,7 @@ class Run:
     function: str
     experiment: str
     inputs: dict[str, Any]
-    metrics: dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
     artifacts: list[dict[str, str]] = field(default_factory=list)
     other: dict[str, Any] = field(default_factory=dict)
     duration_sec: float = 0.0
