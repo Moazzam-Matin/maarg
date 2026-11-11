@@ -10,6 +10,7 @@
 
 <div align="center">
 
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/maarg?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/maarg)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/maarg?label=PyPI%20downloads&color=blue)](https://pypi.org/project/maarg/)
 [![PyPI](https://img.shields.io/pypi/v/maarg.svg)](https://pypi.org/project/maarg/)
 [![CI](https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml/badge.svg)](https://github.com/Moazzam-Matin/maarg/actions/workflows/ci.yaml)
@@ -78,7 +79,7 @@ Automatically captures supported function inputs, including scalars and common c
 
 ### 📊 Automatic Metrics
 
-Numeric function outputs are automatically recorded as metrics, making experiment results easy to query and compare.
+Function outputs are automatically captured as metrics, including structured dictionary results with nested JSON-compatible values.
 
 ### 📦 Artifact Capture
 
@@ -135,7 +136,7 @@ train_model()
 During execution, `maarg` captures supported information such as:
 
 * Function inputs
-* Numeric outputs as metrics
+* Numeric and structured dictionary outputs as metrics
 * Artifacts
 * Execution duration
 * Run status
@@ -276,7 +277,7 @@ def train_model(learning_rate=0.01, epochs=10):
 For each tracked execution, `maarg` can record:
 
 * Function inputs
-* Numeric outputs as metrics
+* Numeric and structured dictionary outputs as metrics
 * Other supported outputs
 * Artifacts
 * Execution duration
@@ -469,15 +470,17 @@ To keep stored run data manageable, capture limits are applied to scalar values 
 
 Function outputs are recorded according to their type:
 
-| Output             | Recorded As                   |
-| ------------------ | ----------------------------- |
-| `int` / `float`    | Metric                        |
-| `bool`             | Other                         |
-| `str` / `None`     | Other                         |
-| Supported artifact | Artifact                      |
+| Output | Recorded As |
+| --- | --- |
+| Numeric scalar (`int` / `float`) | Metric |
+| Dictionary with JSON-compatible values | Structured metrics, preserving the original nested structure |
+| `bool`, `str`, or `None` returned outside a dictionary | Other |
+| Supported artifact | Artifact |
 | Unsupported object | Safe truncated representation |
 
-Numeric outputs are automatically available as metrics for querying and ranking.
+Dictionary outputs preserve JSON-compatible values — including numbers, booleans, strings, `None`, nested dictionaries, and lists—in `run.metrics`. This allows structured experiment results to be inspected without flattening their contents.
+
+Scalar numeric metrics remain available for querying and ranking through `top_n()` and `best_run()`.
 
 ### Artifact Capture
 
@@ -541,8 +544,7 @@ In short:
 The current release focuses on:
 
 * Zero-boilerplate function tracking
-* Automatic input and output capture
-* Automatic metric capture
+* Automatic input, numeric, and structured output capture
 * Artifact capture
 * Execution timing
 * Failure tracking

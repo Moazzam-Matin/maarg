@@ -190,3 +190,11 @@ def test_filter_runs_multiple_inputs():
     r2 = make_run(inputs={"a": 1, "b": 3})
     result = filter_runs([r1, r2], a=1, b=2)
     assert result == [r1]
+
+def test_top_n_excludes_boolean_metrics():
+    numeric = make_run(metrics={"score": 1})
+    boolean = make_run(metrics={"score": True})
+
+    result = top_n([boolean, numeric], metric="score")
+
+    assert result == [numeric]

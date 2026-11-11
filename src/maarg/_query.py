@@ -61,6 +61,7 @@ def top_n(
     valid = [
         r for r in candidates
         if isinstance(r.metrics.get(metric), (int, float))
+        and not isinstance(r.metrics.get(metric), bool)
     ]
     return sorted(
         valid,

@@ -107,8 +107,8 @@ def test_track_with_custom_experiment_and_limits(storage):
     assert len(runs) == 1
     run = runs[0]
     assert run.inputs == {"epochs": 10}
-    assert run.metrics == {"accuracy": 0.98}
-    assert run.other == {"status": "done"}
+    assert run.metrics == {"accuracy": 0.98, "status": "done"}
+    assert run.other == {}
 
 
 def test_track_captures_exception_and_reraises(storage):

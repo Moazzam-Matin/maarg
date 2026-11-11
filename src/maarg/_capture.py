@@ -136,33 +136,52 @@ _register_serializer(
     "chart",
 )
 
+def _is_structured_output(value: Any) -> bool:
+    """Check whether a value is a JSON-compatible nested structure."""
+    if isinstance(value, (bool, int, float, str, type(None))):
+        return True
+
+    if isinstance(value, list):
+        return all(_is_structured_output(item) for item in value)
+
+    if isinstance(value, dict):
+        return all(
+            isinstance(key, str) and _is_structured_output(item)
+            for key, item in value.items()
+        )
+
+    return False
 
 def split_output(
     output: Any,
     artifacts_dir: str | Path,
-) -> tuple[dict[str, float], list[dict[str, str]], dict[str, Any]]:
+) -> tuple[dict[str, Any], list[dict[str, str]], dict[str, Any]]:
     """
     Classify a function's return value into (metrics, artifacts, other).
 
-    - A dict return value is walked key by key, classifying each value.
-    - A non-dict return value is treated as a single item named "result".
-
-    Classification rules, in order:
-      - bool         -> other (never treated as a number)
-      - int / float  -> metrics
-      - a known artifact type (currently: matplotlib Figure) -> saved to
-        disk under `artifacts_dir`, recorded in artifacts
-      - str / None   -> other, stored as-is
-      - anything else (unrecognized object) -> other, as a truncated repr
+    Dictionary outputs preserve JSON-compatible values as structured metrics.
+    Registered artifact types are saved separately. Unsupported values fall
+    back to a truncated representation.
     """
-    metrics: dict[str, float] = {}
+    metrics: dict[str, Any] = {}
     artifacts: list[dict[str, str]] = []
     other: dict[str, Any] = {}
 
     items = output.items() if isinstance(output, dict) else [("result", output)]
 
     for name, value in items:
-        if isinstance(value, bool):
+        if isinstance(output, dict) and _is_structured_output(value):
+            metrics[name] = value
+        elif (serializer := _find_serializer(value)) is not None:
+            path = serializer.serialize(value, name, artifacts_dir)
+            artifacts.append(
+                {
+                    "name": name,
+                    "path": path,
+                    "type": serializer.artifact_type,
+                }
+            )
+        elif isinstance(value, bool):
             other[name] = value
         elif isinstance(value, (int, float)):
             metrics[name] = value
