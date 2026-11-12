@@ -295,3 +295,27 @@ def test_split_output_preserves_nested_dictionary_structure(tmp_path):
     assert metrics == output
     assert other == {}
     assert artifacts == []
+
+def test_split_output_with_non_string_top_level_key():
+    output = {1: 0.95, "recall": 0.84}
+
+    metrics, artifacts, other = split_output(output, artifacts_dir="unused")
+
+    assert metrics == {}
+    assert artifacts == []
+    assert other == {"result": repr(output)[:200]}
+
+
+def test_split_output_with_non_string_nested_key():
+    output = {
+        "metrics": {
+            1: 0.95,
+            "recall": 0.84,
+        }
+    }
+
+    metrics, artifacts, other = split_output(output, artifacts_dir="unused")
+
+    assert metrics == {}
+    assert artifacts == []
+    assert other == {"metrics": repr(output["metrics"])[:200]}

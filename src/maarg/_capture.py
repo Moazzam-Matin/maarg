@@ -9,6 +9,7 @@ file handles) that should be skipped.
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -166,8 +167,14 @@ def split_output(
     metrics: dict[str, Any] = {}
     artifacts: list[dict[str, str]] = []
     other: dict[str, Any] = {}
+    items: Iterable[tuple[str, Any]]
 
-    items = output.items() if isinstance(output, dict) else [("result", output)]
+    if isinstance(output, dict) and not all(
+        isinstance(key, str) for key in output
+    ):
+        items = [("result", output)]
+    else:
+        items = output.items() if isinstance(output, dict) else [("result", output)]
 
     for name, value in items:
         if isinstance(output, dict) and _is_structured_output(value):
@@ -185,15 +192,6 @@ def split_output(
             other[name] = value
         elif isinstance(value, (int, float)):
             metrics[name] = value
-        elif (serializer := _find_serializer(value)) is not None:
-            path = serializer.serialize(value, name, artifacts_dir)
-            artifacts.append(
-                {
-                    "name": name,
-                    "path": path,
-                    "type": serializer.artifact_type,
-                }
-            )
         elif isinstance(value, (str, type(None))):
             other[name] = value
         else:

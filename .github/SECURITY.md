@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="../docs/assets/maarg_icon.svg" alt="maarg logo" width="140">
+  <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_icon.svg" alt="maarg logo" width="140">
 </p>
 
-# Security Policy
+<h1 align="center">Security Policy</h1>
 
 ## Supported Versions
 

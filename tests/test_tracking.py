@@ -111,6 +111,28 @@ def test_track_with_custom_experiment_and_limits(storage):
     assert run.other == {}
 
 
+def test_track_preserves_nested_dictionary_after_sqlite_round_trip(storage):
+    expected = {
+        "precision": 0.91,
+        "recall": 0.87,
+        "details": {
+            "per_class": [0.89, 0.93],
+            "converged": True,
+            "checkpoint": None,
+        },
+    }
+
+    @track(storage=storage)
+    def train_model():
+        return expected
+
+    train_model()
+
+    runs = storage.list_by_function("train_model")
+
+    assert len(runs) == 1
+    assert runs[0].metrics == expected
+
 def test_track_captures_exception_and_reraises(storage):
     @track(storage=storage, experiment="crash-test")
     def faulty_function(x=5):

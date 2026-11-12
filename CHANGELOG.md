@@ -2,6 +2,21 @@
 
 All notable changes to maarg are documented here.
 
+## [0.4.1] — 2026-11-13
+
+### Fixed
+
+- Handle dictionary outputs with non-string keys safely, preventing key changes during SQLite JSON serialization.
+
+### Added
+
+- Regression tests for non-string dictionary keys.
+- SQLite round-trip test to verify structured dictionary outputs retain their values.
+
+### Changed
+
+- Centered the logo and main headings in the Code of Conduct and Security Policy documents.
+
 ## [0.4.0] — 2026-11-11
 
 ### Added

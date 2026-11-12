@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="../docs/assets/maarg_icon.svg" alt="maarg logo" width="140">
+  <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/maarg_icon.svg" alt="maarg logo" width="140">
 </p>
 
-## Summary
+<h1 align="center">Summary</h1>
 
 <!-- Briefly describe what this pull request changes. -->
 
