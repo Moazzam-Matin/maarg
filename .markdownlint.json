@@ -3,7 +3,7 @@
     "siblings_only": true
   },
   "MD033": {
-    "allowed_elements": ["p", "picture", "source", "img", "h3", "code", "strong", "a", "h1", "div"]
+    "allowed_elements": ["p", "picture", "source", "img", "h3", "code", "strong", "a", "h1", "div", "table", "tr", "td"]
   },
   "MD013": false,
   "MD041": false
