@@ -19,6 +19,16 @@
 
 </div>
 
+<p align="center">
+  <a href="CHANGELOG.md">
+    <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/changelog_button.svg" alt="View Changelog">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/Moazzam-Matin/maarg/discussions">
+    <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/discussions_button.svg" alt="Join Discussions">
+  </a>
+</p>
+
 ## What is maarg?
 
 `maarg` is a lightweight experiment tracking library for Python built to stay out of your way. With a simple `@track` decorator, it automatically records the information behind your experiments — from inputs and metrics to artifacts, execution time, and failures — so you can understand and compare your runs without adding tracking code throughout your project.

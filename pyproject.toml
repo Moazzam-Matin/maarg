@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maarg"
-version = "0.4.1"
+version = "0.4.2"
 description = "Lightweight experiment tracking for Python with zero boilerplate — automatically capture inputs, metrics, artifacts, execution time, and failures with a simple decorator."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -44,6 +44,7 @@ plotting = ["matplotlib"]
 Homepage = "https://github.com/Moazzam-Matin/maarg"
 Repository = "https://github.com/Moazzam-Matin/maarg"
 Issues = "https://github.com/Moazzam-Matin/maarg/issues"
+Changelog = "https://github.com/Moazzam-Matin/maarg/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]

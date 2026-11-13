@@ -2,6 +2,15 @@
 
 All notable changes to maarg are documented here.
 
+## [0.4.2] — 2026-11-14
+
+### Changed
+
+- Added a direct Changelog link to the project metadata.
+- Added branded Changelog and Discussions buttons to the README.
+- Updated the button design to match the maarg logo gradient.
+- Added GitHub Actions automation to update the Changelog button with the latest release version.
+
 ## [0.4.1] — 2026-11-13
 
 ### Fixed

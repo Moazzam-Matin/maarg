@@ -1,0 +1,17 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="42" viewBox="0 0 260 42">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0D65BF"/>
+      <stop offset="100%" stop-color="#0BA39F"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="260" height="42" rx="7" fill="url(#brandGradient)"/>
+
+  <text x="130" y="26" text-anchor="middle"
+        font-family="Arial, sans-serif" font-size="14"
+        font-weight="bold" fill="#FFFFFF">
+    CHANGELOG · LATEST RELEASE →
+  </text>
+</svg>
