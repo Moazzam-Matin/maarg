@@ -20,12 +20,20 @@
 </div>
 
 <p align="center">
-  <a href="CHANGELOG.md" style="text-decoration: none;">
-    <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/changelog_button.svg" alt="View Changelog">
+  <a href="CHANGELOG.md" style="display: inline-block; text-decoration: none;">
+    <img
+      src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/changelog_button.svg"
+      alt="View Changelog"
+      style="display: block; border: 0;"
+    >
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/Moazzam-Matin/maarg/discussions" style="text-decoration: none;">
-    <img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/discussions_button.svg" alt="Join Discussions">
+  <a href="https://github.com/Moazzam-Matin/maarg/discussions" style="display: inline-block; text-decoration: none;">
+    <img
+      src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/discussions_button.svg"
+      alt="Join Discussions"
+      style="display: block; border: 0;"
+    >
   </a>
 </p>
 
