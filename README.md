@@ -20,7 +20,7 @@
 </div>
 
 <p align="center">
-  <a href="CHANGELOG.md"><img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/changelog_button.svg" alt="View Changelog"></a>
+  <a href="https://github.com/Moazzam-Matin/maarg/blob/main/CHANGELOG.md"><img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/changelog_button.svg" alt="View Changelog"></a>
   &nbsp;&nbsp;
   <a href="https://github.com/Moazzam-Matin/maarg/discussions"><img src="https://raw.githubusercontent.com/Moazzam-Matin/maarg/main/docs/assets/discussions_button.svg" alt="Join Discussions"></a>
 </p>
