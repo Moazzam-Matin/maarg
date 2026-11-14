@@ -303,7 +303,7 @@ Step-wise logging requires a dedicated design discussion because it must not com
 ### Possible release direction
 
 | Release | Direction |
-|---|---|
+| --- | --- |
 | v0.4.2 | Project presentation and release automation — shipped |
 | v0.5.0 | Structured evaluation results and extensibility |
 | v0.6.0 | Potential query, comparison, and analysis improvements |
@@ -443,8 +443,8 @@ Use this checklist for every release.
 - **License:** Apache License 2.0
 - **Primary language:** Python
 - **Default storage:** SQLite
-- **Repository:** https://github.com/Moazzam-Matin/maarg
-- **PyPI:** https://pypi.org/project/maarg/
+- **Repository:** [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/Moazzam-Matin/maarg)
+- **PyPI:** [![PyPI Version](https://img.shields.io/pypi/v/maarg)](https://pypi.org/project/maarg/)
 
 ---
 
