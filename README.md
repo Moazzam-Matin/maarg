@@ -608,8 +608,13 @@ For larger changes, opening an issue or discussing the proposed approach first c
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the complete contribution workflow.
 
+
 ## License
 
 `maarg` is licensed under the Apache License 2.0.
 
 See [`LICENSE`](LICENSE) for the full license text.
+
+---
+
+Copyright © 2026 Moazzam Matin. All rights reserved.
