@@ -168,7 +168,101 @@ There is no committed implementation timeline.
 
 ---
 
-## 5. v0.5.0 Roadmap
+## 5. v0.4.3 Roadmap
+
+### Theme: Result Presentation and Data Portability
+
+The goal of v0.4.3 is to make experiment results easier to inspect, understand, and reuse outside maarg.
+
+maarg should not only capture experiment results automatically, but also make those results accessible in formats that fit different analysis tools and workflows.
+
+### Priority 0 — Result Presentation
+
+Improve the presentation of the existing query API:
+
+- `compare()`
+- `top_n()`
+- `best_run()`
+
+Objectives:
+
+- Readable terminal output.
+- HTML representation for Jupyter notebooks.
+- Preserve the underlying Python data and programmatic access.
+- Avoid mandatory heavyweight dependencies.
+
+### Priority 1 — CSV Export
+
+Introduce CSV export functionality.
+
+Objectives:
+
+- Export individual runs and collections of runs.
+- Make experiment metrics and parameters accessible in spreadsheet applications.
+- Define predictable column names.
+- Establish consistent handling of missing and nested values.
+- Avoid silently discarding structured information.
+
+### Priority 2 — JSON Export
+
+Introduce JSON export functionality.
+
+Objectives:
+
+- Preserve nested dictionaries and lists.
+- Include run identifiers, parameters, metrics, timestamps, status, and other relevant metadata.
+- Support individual-run and multiple-run exports.
+- Produce predictable, reusable JSON structures.
+
+### Priority 3 — XML Export
+
+Introduce XML export functionality.
+
+Objectives:
+
+- Represent run information, parameters, metrics, and structured outputs.
+- Preserve nested structures.
+- Define a consistent XML schema and naming convention.
+- Produce valid, well-formed XML.
+- Avoid unnecessary dependencies.
+
+### Priority 4 — Export API Design
+
+Evaluate a consistent public API for exporting experiment results.
+
+Potential functions:
+
+- `export_csv()`
+- `export_json()`
+- `export_xml()`
+
+Design considerations:
+
+- Standalone functions versus methods on result objects.
+- Individual-run and multiple-run export behavior.
+- File paths and return values.
+- Consistent error handling.
+- Backward compatibility with existing query functions.
+
+The exact API must be designed before implementation.
+
+### Priority 5 — Tests and Documentation
+
+- Regression tests for all export formats.
+- Nested dictionary and collection handling.
+- Empty and multiple-run exports.
+- CSV column consistency.
+- JSON structure and round-trip validation.
+- XML well-formedness and structure validation.
+- Practical documentation and examples.
+
+### v0.4.3 Scope Principle
+
+The release should improve result presentation and data portability without changing maarg's core tracking behavior.
+
+Keep the core lightweight, preserve backward compatibility, and avoid adding unrelated features.
+
+## 6. v0.5.0 Roadmap
 
 ### Theme: Output Reliability and Extensibility
 
@@ -267,7 +361,7 @@ Implementation decisions should follow investigation and testing. Keep the relea
 
 ---
 
-## 6. Future Roadmap
+## 7. Future Roadmap
 
 These are ideas worth retaining for future evaluation. They are not committed to v0.5.0.
 
@@ -305,14 +399,15 @@ Step-wise logging requires a dedicated design discussion because it must not com
 | Release | Direction |
 | --- | --- |
 | v0.4.2 | Project presentation and release automation — shipped |
-| v0.5.0 | Structured evaluation results and extensibility |
+| v0.4.3 | Result presentation and data export — planned |
+| v0.5.0 | Structured evaluation results and extensibility — planned |
 | v0.6.0 | Potential query, comparison, and analysis improvements |
 
 Future release themes are tentative and will be refined as the project evolves.
 
 ---
 
-## 7. Non-goals
+## 8. Non-goals
 
 The following are intentionally outside the current product direction:
 
@@ -329,7 +424,7 @@ The goal is to remain a focused Python experiment tracking library.
 
 ---
 
-## 8. Project Decisions
+## 9. Project Decisions
 
 ### CLI
 
@@ -355,86 +450,86 @@ This is low priority and does not block development.
 
 ---
 
-## 9. Release Checklist
+## 10. Release Checklist
 
 Use this checklist for every release.
 
 ### Pre-release
 
-- [ ] Confirm release scope and completed issues.
-- [ ] Confirm the target version.
-- [ ] Update the version in `pyproject.toml`.
-- [ ] Update the version in `src/maarg/__init__.py`, if applicable.
-- [ ] Update `CHANGELOG.md`.
-- [ ] Update README release references and links.
-- [ ] Ensure the Changelog link uses the full GitHub URL so it works on PyPI:
-      `https://github.com/Moazzam-Matin/maarg/blob/main/CHANGELOG.md`
-- [ ] Review documentation and package metadata.
+- Confirm release scope and completed issues.
+- Confirm the target version.
+- Update the version in `pyproject.toml`.
+- Update the version in `src/maarg/__init__.py`, if applicable.
+- Update `CHANGELOG.md`.
+- Update README release references and links.
+- Ensure the Changelog link uses the full GitHub URL so it works on PyPI:
+    `https://github.com/Moazzam-Matin/maarg/blob/main/CHANGELOG.md`
+- Review documentation and package metadata.
 
 ### Quality checks
 
-- [ ] Run the full test suite.
-- [ ] Run Ruff checks.
-- [ ] Run mypy checks.
-- [ ] Run `git diff --check`.
-- [ ] Verify GitHub Actions CI across supported Python versions and operating systems.
-- [ ] Review any failing or skipped tests.
+- Run the full test suite.
+- Run Ruff checks.
+- Run mypy checks.
+- Run `git diff --check`.
+- Verify GitHub Actions CI across supported Python versions and operating systems.
+- Review any failing or skipped tests.
 
 ### Build and validation
 
-- [ ] Delete existing `build/` and `dist/` directories to prevent stale artifacts from being included.
-- [ ] Build distributions:
+- Delete existing `build/` and `dist/` directories to prevent stale artifacts from being included.
+- Build distributions:
 
   ```powershell
   python -m build
   ```
 
-- [ ] Validate distributions:
+- Validate distributions:
 
   ```powershell
   python -m twine check dist/*
   ```
 
-- [ ] Inspect the generated wheel and source distribution.
-- [ ] Confirm the package version and included files are correct.
+- Inspect the generated wheel and source distribution.
+- Confirm the package version and included files are correct.
 
 ### GitHub release
 
-- [ ] Commit and push release changes.
-- [ ] Create an annotated version tag:
+- Commit and push release changes.
+- Create an annotated version tag:
 
   ```powershell
   git tag -a vX.Y.Z -m "Release vX.Y.Z"
   ```
 
-- [ ] Push the tag:
+- Push the tag:
 
   ```powershell
   git push origin vX.Y.Z
   ```
 
-- [ ] Create and publish the GitHub Release.
-- [ ] Verify the release notes and tag.
+- Create and publish the GitHub Release.
+- Verify the release notes and tag.
 
 ### PyPI publication
 
-- [ ] Verify the PyPI publishing workflow succeeds.
-- [ ] If needed, use the manual `workflow_dispatch` trigger as a fallback.
-- [ ] Confirm the new version appears on PyPI.
-- [ ] Test installation using the published package.
-- [ ] Verify the README and project links render correctly on PyPI.
+- Verify the PyPI publishing workflow succeeds.
+- If needed, use the manual `workflow_dispatch` trigger as a fallback.
+- Confirm the new version appears on PyPI.
+- Test installation using the published package.
+- Verify the README and project links render correctly on PyPI.
 
 ### Post-release
 
-- [ ] Confirm package badges display correctly.
-- [ ] Confirm the automated Changelog button reflects the latest version.
-- [ ] Review GitHub Issues and Discussions.
-- [ ] Record the release and its key changes in this document.
-- [ ] Identify any deferred work for the next release.
+- Confirm package badges display correctly.
+- Confirm the automated Changelog button reflects the latest version.
+- Review GitHub Issues and Discussions.
+- Record the release and its key changes in this document.
+- Identify any deferred work for the next release.
 
 ---
 
-## 10. Project Identity
+## 11. Project Identity
 
 - **Name:** maarg
 - **Meaning:** मार्ग — Hindi for path or route.
@@ -448,5 +543,5 @@ Use this checklist for every release.
 
 ---
 
-*Last Updated: November 14, 2026*  
+*Last Updated: November 23, 2026*  
 *Current Release: v0.4.2*
