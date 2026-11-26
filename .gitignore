@@ -38,3 +38,7 @@ Thumbs.db
 # Local databases
 temp_check.db
 *.db
+
+# Local maarg tracking
+    data
+.maarg/
